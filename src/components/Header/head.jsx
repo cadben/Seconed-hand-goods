@@ -8,7 +8,6 @@ import { DownOutlined } from '@ant-design/icons';
 
 const { Header } = Layout;
 
-
 function MHeader() {
   const LinkItems = [
     {
@@ -40,7 +39,7 @@ function MHeader() {
         </div>
         <div className={styles.headerRight}>
           {
-            LinkItems.map((item, index) => {
+            LinkItems.map((item) => {
               if (!item.childrens) {
                 return (<Link to={item.path}>{item.title}</Link>)
               } else {
