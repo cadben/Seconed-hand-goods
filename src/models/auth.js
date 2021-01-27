@@ -1,12 +1,10 @@
 
 export default {
 
-  namespace: 'example',
-
-  state: {},
-
-  subscriptions: {
-    setup({ dispatch, history }) {  // eslint-disable-line
+  namespace: 'auth',
+  state: {
+    user: {
+      // name: 'ckf'
     },
   },
 

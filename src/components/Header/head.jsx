@@ -8,7 +8,7 @@ import { DownOutlined } from '@ant-design/icons';
 
 const { Header } = Layout;
 
-function MHeader() {
+function MHeader(props) {
   const LinkItems = [
     {
       title: '购物车',
@@ -31,11 +31,23 @@ function MHeader() {
       </MenuItem>
     </Menu>
   )
+
+  const { Auth } = props;
+  const { user } = Auth;
+  console.log(user);
   return (
     <Header>
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <Link to="/app">首页</Link>
+          {
+            <span className={styles.login_tip}>你好
+              {
+                !(user.length > 0) ? <Link to="/app/login" style={{ textDecoration: 'underline' }}>  请登陆</Link> :
+                <Link to="/app/my" style={{ textDecoration: 'underline' }}>  {user.name}</Link>
+              }
+            </span>
+          }
         </div>
         <div className={styles.headerRight}>
           {

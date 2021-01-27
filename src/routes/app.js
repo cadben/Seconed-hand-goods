@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'dva';
 import { Layout } from 'antd';
 import MHeader from '../components/Header/head';
-// import { withRouter, Link } from 'dva/router';
+import { withRouter } from 'dva/router';
 import styles from './app.less';
 
 const { Footer, Content } = Layout;
@@ -13,10 +13,12 @@ class App extends React.Component {
   }
 
   render() {
-    const { children } = this.props;
+    const { children, auth } = this.props;
     return (
       <Layout className={styles.layout}>
-        <MHeader/>
+        <MHeader
+          Auth={auth}
+        />
         <Content>
           {children}
         </Content>
@@ -28,4 +30,11 @@ class App extends React.Component {
   }
 }
 
-export default connect()(App);
+const AppmapProps = (state) => {
+  console.log('123', state);
+  return {
+    auth: state.auth,
+  }
+}
+
+export default withRouter(connect(AppmapProps)(App));

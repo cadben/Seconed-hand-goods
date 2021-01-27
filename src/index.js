@@ -1,6 +1,7 @@
 import dva from 'dva';
 import { createBrowserHistory } from 'history';
 import './index.css';
+import auth from './models/auth';
 
 // 1. Initialize
 const app = dva({
@@ -12,6 +13,7 @@ const app = dva({
 
 // 3. Model
 // app.model(require('./models/example').default);
+app.model(auth);
 
 // 4. Router
 app.router(require('./router').default);
