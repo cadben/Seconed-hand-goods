@@ -20,7 +20,7 @@ class MSearch extends React.Component {
     } = this.props;
     return(
       <div className={styles.SearchDiv}>
-        <img src="https://cdn.jsdelivr.net/gh/cadben/images_store@master/img/fxxj3ttftm5ltcqnto1o4baovyl.png" className={styles.SearchLogo}/>
+        <img src="https://cdn.jsdelivr.net/gh/cadben/images_store@master/img/fxxj3ttftm5ltcqnto1o4baovyl.png" className={styles.SearchLogo} alt="Logo"/>
         <input 
           className={styles.MInput}
           placeholder="输入商品关键词"
