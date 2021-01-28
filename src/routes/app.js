@@ -13,18 +13,26 @@ class App extends React.Component {
   }
 
   render() {
-    const { children, auth } = this.props;
+    const { children, auth, location } = this.props;
+    const { pathname } = location;
+    console.log(pathname);
     return (
       <Layout className={styles.layout}>
-        <MHeader
-          Auth={auth}
-        />
-        <Content>
+        {
+          (pathname === '/app/login') ? null : (<MHeader
+            Auth={auth}
+          />) 
+        }
+        <Content
+          style={pathname === '/app/login' ? { padding: '0px 0px' } : null}
+        >
           {children}
         </Content>
-        <Footer>
-          &copy; 2021 版权所有
-        </Footer>
+        {
+          (pathname === '/app/login') ? null : (<Footer>
+            &copy; 2021 版权所有
+          </Footer>)
+        }
       </Layout>
     )
   }

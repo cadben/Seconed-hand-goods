@@ -1,3 +1,31 @@
-.homePage {
-  padding: 20px 0px;
+.loginPage{
+  width: 100%;
+  height: 100vh;
+  background: url(https://cdn.jsdelivr.net/gh/cadben/images_store@master/img/bc1.png) no-repeat;
+  background-size: cover;
+  position: relative;
+  .LoginContent{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 100px;
+    width: 400px;
+    min-height: 500px;
+    background: #ffffff;
+  }
+}
+
+.example-enter {
+  opacity: 0.01;
+}
+.example-enter.example-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+.example-leave {
+  opacity: 1;
+}
+.example-leave.example-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
 }
