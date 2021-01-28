@@ -40,7 +40,7 @@ class LoginPage extends React.Component {
     return (
       <div className={styles.loginPage}>
           <QueueAnim
-            delay={1000}
+            delay={500}
             className="queue-simple">
           <div
             key="login"
