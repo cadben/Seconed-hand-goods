@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'dva';
 import styles from './index.less';
 import QueueAnim from 'rc-queue-anim';
-import { Input, Tabs, Form, Button } from 'antd';
+import { Input, Tabs, Form, Button, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 
 const { TabPane } = Tabs;
@@ -16,7 +16,7 @@ class LoginPage extends React.Component {
   AccountRef = React.createRef();
   ResgiterRef = React.createRef();
   PhoneLoginRef = React.createRef();
-  
+
   passwordValidator = (rule, value, callback) => {
     const { getFieldValue } = this.ResgiterRef.current;
     if (value && value !== getFieldValue('register_password1')) {
@@ -33,6 +33,24 @@ class LoginPage extends React.Component {
     });
   }
 
+  onFinishLogin = async () => {
+    const { getFieldValue } = this.AccountRef.current;
+    const { history } = this.props;
+    const account = getFieldValue('account');
+    const password = getFieldValue('password');
+    const result = await this.props.dispatch({
+      type: 'auth/toLogin',
+      payload: {
+        account,
+        password,
+      },
+    });
+    if (result) {
+      message.success('登录成功');
+      history.push('/app');
+    }
+  }
+
   render() {
     const {
       tabKey
@@ -40,7 +58,7 @@ class LoginPage extends React.Component {
     return (
       <div className={styles.loginPage}>
           <QueueAnim
-            delay={500}
+            delay={300}
             className="queue-simple">
           <div
             key="login"
@@ -56,7 +74,7 @@ class LoginPage extends React.Component {
                 wrapperCol={{ span: 24 }}
                 ref={this.AccountRef}
                 name="account-ref"
-                onFinish={this.onFinish}
+                onFinish={this.onFinishLogin}
               >
                 <Form.Item name="account" rules={[{ required: true, message: '账号不能为空' }]}>
                   <Input placeholder="请输入账号"/>
@@ -70,6 +88,7 @@ class LoginPage extends React.Component {
                 <Form.Item>
                   <Button
                     type="primary"
+                    htmlType="submit"
                     className={styles.loginBt}
                   >登录</Button>
                 </Form.Item>

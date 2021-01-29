@@ -34,7 +34,6 @@ function MHeader(props) {
 
   const { Auth } = props;
   const { user } = Auth;
-  console.log(user);
   return (
     <Header>
       <div className={styles.header}>
@@ -43,7 +42,7 @@ function MHeader(props) {
           {
             <span className={styles.login_tip}>你好
               {
-                !(user.length > 0) ? <Link to="/app/login" style={{ textDecoration: 'underline' }}>  请登陆</Link> :
+                !(user && user.name) ? <Link to="/app/login" style={{ textDecoration: 'underline' }}>  请登陆</Link> :
                 <Link to="/app/my" style={{ textDecoration: 'underline' }}>  {user.name}</Link>
               }
             </span>

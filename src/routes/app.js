@@ -12,10 +12,13 @@ class App extends React.Component {
     super(props);
   }
 
+  componentDidMount() {
+    console.log(this.props.auth);
+  }
+
   render() {
     const { children, auth, location } = this.props;
     const { pathname } = location;
-    console.log(pathname);
     return (
       <Layout className={styles.layout}>
         {
@@ -39,7 +42,6 @@ class App extends React.Component {
 }
 
 const AppmapProps = (state) => {
-  console.log('123', state);
   return {
     auth: state.auth,
   }

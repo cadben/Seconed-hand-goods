@@ -9,14 +9,27 @@ export default {
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {  // eslint-disable-line
-      yield put({ type: 'save' });
+    *toLogin({ payload }, { call, put }) {
+      // const result = yield call();
+      console.log(payload);
+      yield put({
+        type: 'saveAuth',
+        payload: {
+          user: {
+            name: 'ckf',
+          }
+        },
+      });
+      return true;
     },
   },
 
   reducers: {
-    save(state, action) {
-      return { ...state, ...action.payload };
+    saveAuth(state, { payload: { user } }) {
+      return {
+        ...state,
+        user,
+      }
     },
   },
 
