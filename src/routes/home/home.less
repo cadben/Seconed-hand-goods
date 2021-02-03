@@ -1,8 +1,86 @@
 .homePage {
   padding: 20px 0px;
+  .navTitle{
+    position: absolute;
+    top: -57.5px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 57.5px;
+    line-height: 57.5px;
+    text-align: center;
+    width: 100%;
+    background: #ffc100;
+    font-size: 16px;
+    color: white;
+    font-weight: 400;
+    letter-spacing: 3px;
+  }
+  .navContent {
+    max-width: 1220px;
+    height: 460px;
+    background-image: url(https://cdn.jsdelivr.net/gh/cadben/images_store@master/img/beijing1.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin: 80px auto;
+    margin-bottom: 0px;
+    position: relative;
+  }
   .navLeft{
-    width: 150px;
-    background: chartreuse;
+    position: relative;
+    width: 234px;
+    .navLeftItem{
+      height: 57.5px;
+      line-height: 57.5px;
+      background: #72727271;
+      padding: 0px 20px;
+      color: #fff;
+      a{
+        color: #fff;
+      }
+      &:hover {
+        background: #ffc100;
+        transition: all 0.2s;
+      }
+      &:hover .popNav{
+        display: block;
+      }
+    }
+    .popNav{
+      position: absolute;
+      left: 234px;
+      top: 0px;
+      background: rgba(255, 255, 255, 0.979);
+      overflow: auto;
+      padding: 10px 20px;
+      display: none;
+      width: 570px;
+      max-height: 460px;
+      box-shadow: 3px 5px 10px #49494960;
+      .popNavItem{
+        a {
+          line-height: 20px;
+          color: #494949;
+          margin-right: 10px;
+        }
+        .PopNavItemTitle {
+          color: rgb(0, 0, 0);
+          line-height: 34px;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+  .toPublish{
+    position: absolute;
+    right: 0px;
+    top: -40px;
+    background: #ffc100;
+    padding: 3px 5px;
+    box-shadow: 3px 3px 5px #4949491f;
+    cursor: pointer;
+    &:hover {
+      background: #ffc001;
+    }
   }
   .bg {
     height: 300px;

@@ -23,6 +23,10 @@ function RouterConfig({ history, app }) {
       path: '/app/login',
       component: () => import('./routes/Login'),
     },
+    {
+      path: '/app/goodscenter',
+      component: () => import('./routes/GoodsCenter'),
+    }
   ]
 
   return (
