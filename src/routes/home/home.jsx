@@ -67,14 +67,18 @@ function HomePage() {
           <img src="https://cdn.jsdelivr.net/gh/cadben/images_store@master/img/publishButton-pic.png"/>
           {/* 发布商品 */}
         </div>
-        {/* <Carousel
-          autoplay
-          autoplaySpeed={4000}
-        >
-        <div>
-          <div style={BannerLists[0]} className={styles.bg}></div>
-        </div>
-        </Carousel> */}
+      </div>
+      <div className={styles.content}>
+        <div className={styles.goodItem}></div>
+        <div className={styles.goodItem}></div>
+        <div className={styles.goodItem}></div>
+        <div className={styles.goodItem}></div>
+        <div className={styles.goodItem}></div>
+        <div className={styles.goodItem}></div>
+        <div className={styles.goodItem}></div>
+        <div className={styles.goodItem}></div>
+        <div className={styles.goodItem}></div>
+        <div className={styles.goodItem}></div>
       </div>
     </div>
   );

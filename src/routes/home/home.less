@@ -88,4 +88,26 @@
     background-position: center;
     background-size: auto 100%;
   }
+  .content {
+    width: 1220px;
+    min-height: 400px;
+    margin:20px auto;
+    display: flex;
+    flex-wrap: wrap;
+    .goodItem{
+      width: 234px;
+      background: #f0f2f5;
+      height: 300px;
+      margin-top: 15px;
+      transition: all .2s linear;
+      cursor: pointer;
+      &:not(:nth-child(5n)) {
+        margin-right: 12px;
+      }
+      &:hover{
+        box-shadow: 0 15px 30px #494949a8;
+        transform: translate3d(0,-3px,0);
+      }
+    }
+  }
 }
