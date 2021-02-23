@@ -1,32 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import styles from './home.less';
-import { Carousel } from 'antd';
 import { category, tag } from '../../models/category';
 import MSearch from '../../components/Search/index';
 import { Link } from 'dva/router';
+import { message } from 'antd';
 
-function HomePage() {
+function HomePage(props) {
 
   const [keyword, setKeyword] = useState('');
+
+  useEffect(() => {
+    const { dispatch } = props;
+    dispatch({
+      type: 'GoodsCenter/getRecommendLists',
+      payload: {},
+    });
+  }, []);
 
   const onChangeKey = (key) => {
     setKeyword(key);
   }
 
   const onSearchGoods = (key) => {
+    const { history } = props;
     console.log('搜key', key);
+    history.push(`/app/goodscenter?searchkey=${key}`);
   }
 
-  // const BannerLists = [
-  //   {
-  //     backgroundImage: 'url(https://aecpm.alicdn.com/tps/i2/TB10vPXKpXXXXacXXXXvKyzTVXX-520-280.jpg)'
-  //   },
-  //   {
-  //     backgroundImage: 'url(https://aecpm.alicdn.com/tps/i2/TB10vPXKpXXXXacXXXXvKyzTVXX-520-280.jpg)'
-  //   }
-  // ]
-  console.log(category, tag);
+  const goToPublish = (e) => {
+    e.preventDefault();
+    const { history, auth } = props;
+    history.push('/app/publish');
+    // if (auth && auth.user && auth.user.name) {
+    //   history.push('/app/publish');
+    // } else {
+    //   message.error('请先登录');
+    //   history.push('/app/login');
+    // }
+  }
+
+  const { RecommendLists } = props;
   return (
     <div className={styles.homePage}>
       <MSearch
@@ -63,28 +77,36 @@ function HomePage() {
             })
           }
         </div>
-        <div className={styles.toPublish}>
-          <img src="https://cdn.jsdelivr.net/gh/cadben/images_store@master/img/publishButton-pic.png"/>
+        <div className={styles.toPublish} onClick={goToPublish}>
+          <img alt="" src="https://cdn.jsdelivr.net/gh/cadben/images_store@master/img/publishButton-pic.png"/>
           {/* 发布商品 */}
         </div>
       </div>
-      <div className={styles.content}>
-        <div className={styles.goodItem}></div>
-        <div className={styles.goodItem}></div>
-        <div className={styles.goodItem}></div>
-        <div className={styles.goodItem}></div>
-        <div className={styles.goodItem}></div>
-        <div className={styles.goodItem}></div>
-        <div className={styles.goodItem}></div>
-        <div className={styles.goodItem}></div>
-        <div className={styles.goodItem}></div>
-        <div className={styles.goodItem}></div>
+      <div className={styles.goodsCenter}>
+        <h2 className={styles.topTitle}>商品推荐</h2>
+        <div className={styles.content}>
+          {
+            RecommendLists.map((item, index) => {
+              return (<div className={styles.goodItem}>
+                <div className={styles.goodItemSrc} style={{ backgroundImage: `url(${item.imgsrc})` }}></div>
+                <div style={{ padding: '0px 20px' }}>
+                  <div className={styles.goodItemTitle}>{item.name}</div>
+                  <div className={styles.goodItemPrice}>¥ {item.price}</div>
+                </div>
+              </div>);
+            })
+          }
+        </div>
       </div>
     </div>
   );
 }
 
-HomePage.propTypes = {
-};
+const pageMapPropsState = (state) => {
+  return {
+    RecommendLists: state.GoodsCenter.RecommendLists,
+    auth: state.auth,
+  }
+}
 
-export default connect()(HomePage);
+export default connect(pageMapPropsState)(HomePage);

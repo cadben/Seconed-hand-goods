@@ -9,13 +9,15 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "ali-oss": "^6.13.2",
     "antd": "^4.10.1",
     "babel-plugin-import": "^1.13.3",
     "dva": "^2.4.1",
     "rc-queue-anim": "^1.8.5",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-transition-group": "^1.2.1"
+    "react-transition-group": "^1.2.1",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "babel-plugin-dva-hmr": "^0.3.2",

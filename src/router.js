@@ -26,6 +26,10 @@ function RouterConfig({ history, app }) {
     {
       path: '/app/goodscenter',
       component: () => import('./routes/GoodsCenter'),
+    },
+    {
+      path: '/app/publish',
+      component: () => import('./routes/Publish'),
     }
   ]
 
