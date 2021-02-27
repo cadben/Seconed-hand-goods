@@ -22,7 +22,7 @@ export default {
   },
   proxy: {
     '/nodeapi': {
-      target: 'http://127.0.0.1:7002/',
+      target: 'http://8.131.58.222:7001/',
       changeOrigin: true,
     }
   },

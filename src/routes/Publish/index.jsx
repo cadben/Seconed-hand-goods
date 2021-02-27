@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'dva';
 import MHeader from '@/components/PSearch';
-import { Divider, Tabs, Upload, Form, Input, Select } from 'antd';
+import { Divider, Tabs, Upload, Form, Input, Select, Radio, InputNumber, Button, Collapse } from 'antd';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import OSS from 'ali-oss';
 import { v4 as uuidv4 } from 'uuid';
-import { getOSSSTS, getBaiduVerift } from '../../services/oss';
+import { getOSSSTS, getBaiduVerift, getGoodPrice } from '../../services/oss';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -17,10 +17,11 @@ class PublishPage extends React.Component {
       key: '',
       fileList: [],
       classes: [],
+      jd_price: 0,
     }
   }
 
-  // PublishForm = React.createRef();
+  PublishForm = React.createRef();
 
   onChangeKey = (currentKey) => {
     this.setState({
@@ -49,7 +50,8 @@ class PublishPage extends React.Component {
           ctx.drawImage(img, 0, 0);
           ctx.fillStyle = '#fff';
           ctx.textBaseline = 'middle';
-          ctx.font = '28px Arial';
+          console.log(canvas.width);
+          ctx.font = (Number(canvas.width / 100) + 12) + 'px Arial';
           ctx.fillText(`在线二货交易@${auth.user.name}`, 20, 20);
           canvas.toBlob(resolve);
         };
@@ -92,14 +94,48 @@ class PublishPage extends React.Component {
         }
       });
       const verifyResult = await getBaiduVerift(fileUrl);
+      let arrSet = verifyResult.data.result.map((item) => {
+        return item.keyword;
+      });
+      arrSet = arrSet.filter((item) => {
+        return !item.includes('广告') && !item.includes('截图');
+      });
+      arrSet.push('其他');
       this.setState({
-        classes: verifyResult.data.result,
+        classes: Array.from(new Set(this.state.classes.concat(arrSet))),
       })
     };
     await this.setState({
       fileList: [...newLists],
     });
     return true;
+  }
+
+  handleChangeName = (e) => {
+    const key = e.target.value;
+    if (key === '') {
+      this.setState({ jd_price: 0 });
+      return ;
+    }
+    new Promise((resolve, reject) => {
+      getGoodPrice(key).then((res) => {
+        if (res) {
+          resolve(res);
+        }
+      });
+    }).then((res) => {
+      if (res.data) {
+        const data = res.data;
+        const { p } = data[0];
+        console.log(data);
+        this.setState({ jd_price: p });
+      }
+    })
+  }
+
+  onFinishLogin = () => {
+    const { getFieldsValue } = this.PublishForm.current;
+    console.log(getFieldsValue('goods_form'));
   }
 
   render() {
@@ -118,7 +154,9 @@ class PublishPage extends React.Component {
                 <Form
                   labelCol={{ span: 2 }}
                   wrapperCol={{ span: 16 }}
-                  // ref={this.PublishForm}
+                  ref={this.PublishForm}
+                  name="goods_form"
+                  onFinish={this.onFinishLogin}
                 >
                   <Form.Item
                     label="上传图片"
@@ -165,32 +203,101 @@ class PublishPage extends React.Component {
                     }
                   </Form.Item>
                   <Form.Item
-                    label="标题"
-                    rules={[{ required: true, message: '标题不能为空' }]}
+                    label="商品名称"
+                    name="good_name"
+                    rules={[{ required: true, message: '名称不能为空' }]}
                   >
-                    <Input 
-                      placeholder="请输入标题"
+                    <Input
+                      placeholder="请输入名称"
+                      onBlur={this.handleChangeName}
                     />
                   </Form.Item>
                   <Form.Item
                     label="分类"
+                    name="good_classify"
                   >
                     <Select style={{ width: '200px' }} >
                       {
                         this.state.classes.map((item, index) => {
                           return (
-                            <Option key={index} value={item.keyword}>{item.keyword}</Option>
+                            <Option key={index} value={item}>{item}</Option>
                           )
                         })
                       }
                     </Select>
                   </Form.Item>
                   <Form.Item
-                    label="成色"
+                    label="品牌"
+                    name="good_brand"
                   >
-
+                    <Input placeholder="请输入商品品牌" style={{ width: '200px' }}/>
+                  </Form.Item>
+                  <Form.Item
+                    label="成色"
+                    name="good_quality"
+                  >
+                    <Radio.Group buttonStyle="solid">
+                      <Radio.Button value="a">全新</Radio.Button>
+                      <Radio.Button value="b">几乎全新</Radio.Button>
+                      <Radio.Button value="c">轻微使用痕迹</Radio.Button>
+                      <Radio.Button value="d">明显刮擦痕迹</Radio.Button>
+                      <Radio.Button value="e">严重损坏</Radio.Button>
+                      <Radio.Button value="f">其他</Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                  <Form.Item
+                    label="价格"
+                    name="good_price"
+                  >
+                    <div
+                      style={{ fontSize: '16px' }}
+                    >
+                      ¥ <InputNumber min={0} max={9999999} step={1} style={{ marginLeft: '5px', marginRight: '5px' }}/> {
+                        (this.state.jd_price > 0) && (<span>京东价格 ¥{this.state.jd_price}</span>)
+                      }
+                    </div>
+                  </Form.Item>
+                  <Form.Item
+                    label="商品描述"
+                    name="good_descript"
+                  >
+                    <Input.TextArea rows={4}/>
+                  </Form.Item>
+                  <Form.Item
+                    label="操作"
+                  >
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      style={{ width: '150px' }}
+                    >发布</Button>
                   </Form.Item>
                 </Form>
+                <Collapse defaultActiveKey={['1']} accordion style={{ fontSize: '14px' }}>
+                  <Collapse.Panel header="上传图片" key="1">
+                    <h4>1.多角度，尽量全面的照片</h4>
+                    正面、反面、侧面、45度…多幅实拍照片，能有效提高买家对商品成色的认知度，避免纠纷;
+                    如有瑕疵或磨损，尽量拍张特写哦~记得选一张商品最靓的照片作为主图呢。
+                    <h4>2.图片限制</h4>
+                    图片每张最大4M，最多8张，我们会保证您上传图片的质量，为买家展示最真实的商品信息哦。
+                  </Collapse.Panel>
+                  <Collapse.Panel header="完善基本信息" key="2">
+                    <h4>1.匹配的类目</h4>
+                    选择精准的类目、品牌、型号，可使买家更准确的找到您的商品；
+                    <h4>2.简洁的标题</h4>
+                    吸引人的标题是增加商品点击率的关键~标题尽量简明扼要，准确的描述出部分信息，使买家一目了然。
+                    <h4>3.准确的成色</h4>
+                    您可选择商品所对应的成色~
+                    <h4>4.合理的定价</h4>
+                    您选定型号后价格右侧会提示新品参考价；您也可搜索该商品，参考其他卖家的商品，合理定价。
+                  </Collapse.Panel>
+                  <Collapse.Panel header="详细描述" key="3">
+                    <h4>1.商品情况</h4>
+                    您可以简单介绍商品入手时间、使用方式/频度、商品的现状，商品的附件情况最好以枚举形式说明，避免买家反复询问；另外商品的拆修史，功能、外观上的瑕疵记得补充说明哦~
+                    <h4>2.其他信息</h4>
+                    如您有其他涉及交易的信息，比如不拆卖、仅单出、打包优惠等，请加以说明，以便买家更好的了解您可接受的交易方式。
+                  </Collapse.Panel>
+                </Collapse>
               </div>
             </TabPane>
           </Tabs>
