@@ -246,15 +246,35 @@ class PublishPage extends React.Component {
                     </Radio.Group>
                   </Form.Item>
                   <Form.Item
-                    label="价格"
+                    label="出售价格"
                     name="good_price"
                   >
                     <div
                       style={{ fontSize: '16px' }}
                     >
-                      ¥ <InputNumber min={0} max={9999999} step={1} style={{ marginLeft: '5px', marginRight: '5px' }}/> {
+                      <InputNumber min={0} max={9999999} step={1} style={{ marginLeft: '5px', marginRight: '5px' }}/> 元 {
                         (this.state.jd_price > 0) && (<span>京东价格 ¥{this.state.jd_price}</span>)
                       }
+                    </div>
+                  </Form.Item>
+                  <Form.Item
+                    label="入手价格"
+                    name="good_price_in"
+                  >
+                    <div
+                      style={{ fontSize: '16px' }}
+                    >
+                      <InputNumber min={0} max={9999999} step={1} style={{ marginLeft: '5px', marginRight: '5px' }}/> 元
+                    </div>
+                  </Form.Item>
+                  <Form.Item
+                    label="邮费"
+                    name="good_price_out"
+                  >
+                    <div
+                      style={{ fontSize: '16px' }}
+                    >
+                      <Input defaultValue="商议" style={{ marginLeft: '5px', marginRight: '5px' }}/>
                     </div>
                   </Form.Item>
                   <Form.Item

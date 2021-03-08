@@ -1,9 +1,11 @@
+import * as services from '../services/goods';
 
 export default {
 
   namespace: 'GoodsCenter',
   state: {
     RecommendLists: [],
+    GoodLists: [],
   },
 
   effects: {
@@ -55,14 +57,39 @@ export default {
       });
       return true;
     },
+    *getGoodLists({ payload }, { call, put }) {
+      const result = yield call(services.getGoodsLists, payload);
+      const { data } = result;
+      if (data.GoodLists) {
+        yield put({
+          type: 'saveGoodLists',
+          payload: {
+            GoodLists: data.GoodLists,
+          },
+        });
+        return data;
+      } else {
+        yield put({
+          type: 'saveGoodLists',
+          payload: {
+            GoodLists: [],
+          },
+        });
+      }
+    },
   },
 
   reducers: {
     saveRecommendLists(state, { payload: { RecommendLists } }) {
-      console.log('出发了2', RecommendLists);
       return {
         ...state,
         RecommendLists,
+      }
+    },
+    saveGoodLists(state, { payload: { GoodLists } }) {
+      return {
+        ...state,
+        GoodLists,
       }
     },
   },
