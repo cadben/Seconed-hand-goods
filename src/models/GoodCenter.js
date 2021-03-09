@@ -67,7 +67,6 @@ export default {
             GoodLists: data.GoodLists,
           },
         });
-        return data;
       } else {
         yield put({
           type: 'saveGoodLists',
@@ -76,6 +75,7 @@ export default {
           },
         });
       }
+      return data;
     },
   },
 
