@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import MHeader from '@/components/PSearch';
-import { Divider, Tabs, Upload, Form, Input, Select, Radio, InputNumber, Button, Collapse } from 'antd';
+import { Divider, Tabs, Upload, Form, Input, Select, Radio, InputNumber, Button, Collapse, message } from 'antd';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons';
 import styles from './index.less';
 import OSS from 'ali-oss';
@@ -35,28 +35,35 @@ class PublishPage extends React.Component {
   }
 
   beforeAddLogo = (file) => {
-    const { auth } = this.props;
-    return new Promise(resolve => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const img = document.createElement('img');
-        img.src = reader.result;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-          ctx.fillStyle = '#fff';
-          ctx.textBaseline = 'middle';
-          console.log(canvas.width);
-          ctx.font = (Number(canvas.width / 100) + 12) + 'px Arial';
-          ctx.fillText(`在线二货交易@${auth.user.name}`, 20, 20);
-          canvas.toBlob(resolve);
+    console.log(file);
+    const { size } = file;
+    if ((size / 1024 / 1024) < 1) {
+      const { auth } = this.props;
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          const img = document.createElement('img');
+          img.src = reader.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            ctx.fillStyle = '#fff';
+            ctx.textBaseline = 'middle';
+            console.log(canvas.width);
+            ctx.font = (Number(canvas.width / 100) + 12) + 'px Arial';
+            ctx.fillText(`在线二货交易@${auth.user.name}`, 20, 20);
+            canvas.toBlob(resolve);
+          };
         };
-      };
-    });
+      });
+    } else {
+      message.error('图片大小不能超过1MB');
+      return false;
+    }
   }
   updateAssetsImg = async (file) => {
     const uid = uuidv4();
@@ -299,7 +306,7 @@ class PublishPage extends React.Component {
                     正面、反面、侧面、45度…多幅实拍照片，能有效提高买家对商品成色的认知度，避免纠纷;
                     如有瑕疵或磨损，尽量拍张特写哦~记得选一张商品最靓的照片作为主图呢。
                     <h4>2.图片限制</h4>
-                    图片每张最大4M，最多8张，我们会保证您上传图片的质量，为买家展示最真实的商品信息哦。
+                    图片每张最大1M，最多8张，我们会保证您上传图片的质量，为买家展示最真实的商品信息哦。
                   </Collapse.Panel>
                   <Collapse.Panel header="完善基本信息" key="2">
                     <h4>1.匹配的类目</h4>
