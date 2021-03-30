@@ -1,26 +1,29 @@
+import { register, login } from '../services/auth';
 
 export default {
 
   namespace: 'auth',
   state: {
     user: {
-      // name: 'ckf'
     },
   },
 
   effects: {
     *toLogin({ payload }, { call, put }) {
-      // const result = yield call();
-      console.log(payload);
-      yield put({
-        type: 'saveAuth',
-        payload: {
-          user: {
-            name: 'ckf',
-          }
-        },
-      });
-      return true;
+      const result = yield call(login, payload);
+      if (result.data && result.data.success) {
+        yield put({
+          type: 'saveAuth',
+          payload: {
+            user: result.data.data,
+          },
+        });
+      }
+      return result;
+    },
+    *toRegister({ payload }, { call, put }) {
+      const result = yield call(register, payload);
+      return result;
     },
   },
 

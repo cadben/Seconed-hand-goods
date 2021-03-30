@@ -32,12 +32,12 @@ function HomePage(props) {
     e.preventDefault();
     const { history, auth } = props;
     history.push('/app/publish');
-    // if (auth && auth.user && auth.user.name) {
-    //   history.push('/app/publish');
-    // } else {
-    //   message.error('请先登录');
-    //   history.push('/app/login');
-    // }
+    if (auth && auth.user && auth.user.user_name) {
+      history.push('/app/publish');
+    } else {
+      message.error('请先登录');
+      history.push('/app/login');
+    }
   }
 
   const { RecommendLists } = props;
@@ -103,6 +103,7 @@ function HomePage(props) {
 }
 
 const pageMapPropsState = (state) => {
+  console.log(state.auth);
   return {
     RecommendLists: state.GoodsCenter.RecommendLists,
     auth: state.auth,

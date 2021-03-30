@@ -42,8 +42,8 @@ function MHeader(props) {
           {
             <span className={styles.login_tip}>你好
               {
-                !(user && user.name) ? <Link to="/app/login" style={{ textDecoration: 'underline' }}>  请登陆</Link> :
-                <Link to="/app/my" style={{ textDecoration: 'underline' }}>  {user.name}</Link>
+                !(user && user.user_name) ? <Link to="/app/login" style={{ textDecoration: 'underline' }}>  请登陆</Link> :
+                <Link to="/app/my" style={{ textDecoration: 'underline' }}>  {user.user_name}</Link>
               }
             </span>
           }

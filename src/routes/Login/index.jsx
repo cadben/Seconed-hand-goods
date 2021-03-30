@@ -11,16 +11,27 @@ class LoginPage extends React.Component {
     super(props);
     this.state = {
       tabKey: '1',
+      loading: false,
     }
   }
   AccountRef = React.createRef();
-  ResgiterRef = React.createRef();
+  Register = React.createRef();
   PhoneLoginRef = React.createRef();
 
+  LengthValidator = (rule, value, callback) => {
+    if (value.length < 8) {
+      callback('长度不能低于8位数')
+    }
+    callback();
+  }
+
   passwordValidator = (rule, value, callback) => {
-    const { getFieldValue } = this.ResgiterRef.current;
+    const { getFieldValue } = this.Register.current;
     if (value && value !== getFieldValue('register_password1')) {
       callback('两次输入不一致！')
+    }
+    if (value.length < 8) {
+      callback('密码长度不能低于8位数')
     }
     callback();
   }
@@ -51,9 +62,37 @@ class LoginPage extends React.Component {
     }
   }
 
+  handleRegister = async () => {
+    this.setState({
+      loading: true
+    });
+    const { getFieldValue } = this.Register.current;
+    const account = getFieldValue('register_account');
+    const password = getFieldValue('register_password1');
+    const result = await this.props.dispatch({
+      type: 'auth/toRegister',
+      payload: {
+        account,
+        password,
+      }
+    });
+    setTimeout(() => {
+      if (result && result.data.success) {
+        message.success(result.data.msg);
+        this.Register.current.resetFields();
+      } else {
+        message.error(result.data.msg);
+      }
+      this.setState({
+        loading: false,
+      });
+    }, 500);
+  }
+
   render() {
     const {
-      tabKey
+      tabKey,
+      loading,
     } = this.state;
     return (
       <div className={styles.loginPage}>
@@ -90,6 +129,7 @@ class LoginPage extends React.Component {
                     type="primary"
                     htmlType="submit"
                     className={styles.loginBt}
+                    loading={loading}
                   >登录</Button>
                 </Form.Item>
                 <Form.Item>
@@ -97,7 +137,7 @@ class LoginPage extends React.Component {
                 </Form.Item>
               </Form>
               </TabPane>
-              <TabPane tab="手机号登录" key="2">
+              {/* <TabPane tab="手机号登录" key="2">
               <Form
                 wrapperCol={{ span: 24 }}
                 ref={this.PhoneLoginRef}
@@ -123,28 +163,30 @@ class LoginPage extends React.Component {
                   >登录</Button>
                 </Form.Item>
               </Form>
-              </TabPane>
+              </TabPane> */}
               <TabPane tab="账号注册" key="3">
               <Form
                 wrapperCol={{ span: 24 }}
-                ref={this.ResgiterRef}
+                ref={this.Register}
                 name="register-ref"
-                onFinish={this.onFinish}
+                onFinish={this.handleRegister}
               >
                 <Form.Item name="register_account"
                   rules={[
                     { required: true, message: '账号不能为空' },
                     { whitespace: true, message: '不能输入空格' },
+                    { validator: this.LengthValidator },
                   ]}
                 >
-                  <Input minLength="8" maxLength="16" placeholder="请输入账号"/>
+                  <Input maxLength="16" placeholder="请输入账号"/>
                 </Form.Item>
                 <Form.Item name="register_password1" rules={[
                     { required: true, message: '密码不能为空' },
                     { whitespace: true, message: '不能输入空格' },
+                    { validator: this.LengthValidator },
                   ]}>
                   <Input.Password
-                    minLength="8" maxLength="16"
+                    maxLength="16"
                     placeholder="请输入密码"
                   />
                 </Form.Item>
@@ -154,14 +196,16 @@ class LoginPage extends React.Component {
                   { validator: this.passwordValidator }
                 ]}>
                   <Input.Password
-                    minLength="8" maxLength="16"
+                    maxLength="16"
                     placeholder="请再次输入密码"
                   />
                 </Form.Item>
                 <Form.Item>
                   <Button
                     type="primary"
+                    htmlType="submit"
                     className={styles.loginBt}
+                    loading={loading}
                   >注册</Button>
                 </Form.Item>
                 <Form.Item>
