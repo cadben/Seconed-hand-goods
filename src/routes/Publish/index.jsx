@@ -220,7 +220,7 @@ class PublishPage extends React.Component {
                   </Form.Item>
                   <Form.Item
                     label="分类"
-                    name="good_classify"
+                    name="good_category"
                   >
                     <Select style={{ width: '200px' }} >
                       {
@@ -240,7 +240,7 @@ class PublishPage extends React.Component {
                   </Form.Item>
                   <Form.Item
                     label="成色"
-                    name="good_quality"
+                    name="good_condition"
                   >
                     <Radio.Group buttonStyle="solid">
                       <Radio.Button value="a">全新</Radio.Button>
@@ -253,7 +253,7 @@ class PublishPage extends React.Component {
                   </Form.Item>
                   <Form.Item
                     label="出售价格"
-                    name="good_price"
+                    name="good_out_price"
                   >
                     <div
                       style={{ fontSize: '16px' }}
@@ -265,7 +265,7 @@ class PublishPage extends React.Component {
                   </Form.Item>
                   <Form.Item
                     label="入手价格"
-                    name="good_price_in"
+                    name="good_in_price"
                   >
                     <div
                       style={{ fontSize: '16px' }}
@@ -275,17 +275,17 @@ class PublishPage extends React.Component {
                   </Form.Item>
                   <Form.Item
                     label="邮费"
-                    name="good_price_out"
+                    name="good_transport"
                   >
                     <div
                       style={{ fontSize: '16px' }}
                     >
-                      <Input defaultValue="商议" style={{ marginLeft: '5px', marginRight: '5px' }}/>
+                       <InputNumber defaultValue={0} min={0} max={9999999} step={1} style={{ marginLeft: '5px', marginRight: '5px' }}/>
                     </div>
                   </Form.Item>
                   <Form.Item
                     label="商品描述"
-                    name="good_descript"
+                    name="good_produce"
                   >
                     <Input.TextArea rows={4}/>
                   </Form.Item>
