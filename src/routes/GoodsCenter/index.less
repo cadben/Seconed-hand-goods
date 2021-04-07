@@ -1,6 +1,28 @@
-.GoodsProvide{
-  margin: 50px auto;
+.sortDiv {
   width: 1200px;
+  background: #FAFAFA;
+  height: 40px;
+  line-height: 40px;
+  margin: 10px auto;
+  padding: 0px 20px;
+  .aactive {
+    color: #ff7b00;
+  }
+  a {
+    color: black;
+  }
+}
+.GoodsProvide{
+  margin: 15px auto;
+  width: 1200px;
+
+  &::after{
+    content: "";
+    display: block;
+    height: 0;
+    clear:both;
+    visibility: hidden;
+  }
   .GoodsCol {
     float: left;
     width: 224px;

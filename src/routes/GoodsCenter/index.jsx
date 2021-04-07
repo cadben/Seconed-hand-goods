@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/href-no-hash */
 import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'dva';
 import MSearch from '../../components/PSearch';
@@ -5,7 +6,7 @@ import qs from 'query-string';
 import GoodsItem from '../../components/GoodsItem/index';
 
 import styles from './index.less';
-import { Pagination, Spin, Empty } from 'antd';
+import { Pagination, Spin, Empty, Divider } from 'antd';
 
 function GoodsCenter(props) {
   const { location, dispatch, goodLists } = props;
@@ -13,7 +14,7 @@ function GoodsCenter(props) {
   const { searchkey } = qs.parse(search);
   const [key, useKey] = useState(searchkey);
   const [pageNo, usePageNo] = useState(1);
-  const [pageSize, usePageSize] = useState(10);
+  const [pageSize] = useState(30);
   const [total, useTotal] = useState(0);
   const [list1, useList1] = useState([]);
   const [list2, useList2] = useState([]);
@@ -22,9 +23,10 @@ function GoodsCenter(props) {
   const [list0, useList0] = useState([]);
   const [loading, useLoading] = useState(false);
   const ProviderRef = useRef();
+  const [sortKey, setSortKey] = useState(0);
 
   useEffect(() => {
-    getLists();
+    getLists({});
   }, []);
 
   const clear = () => {
@@ -81,7 +83,20 @@ function GoodsCenter(props) {
     return min;
   }
 
-  const getLists = async (currentpageNo, currentkey) => {
+  const getLists = async (query) => {
+    const { currentpageNo, currentkey, _sortKey = sortKey } = query;
+    let order = '';
+    let desc = '';
+    if (_sortKey === 1) {
+      order= 'good_browse';
+      desc= true;
+    } else if (_sortKey === 2) {
+      order = 'good_create_time';
+      desc = true;
+    } else if (_sortKey === 3 || _sortKey === 4) {
+      order = 'good_out_price';
+      desc = _sortKey === 3 ? true : '';
+    }
     clear();
     useLoading(true);
     const result = await dispatch({
@@ -91,6 +106,8 @@ function GoodsCenter(props) {
         pageNo: currentpageNo ? currentpageNo : pageNo,
         pageSize,
         total,
+        order: order ? order : '',
+        desc: desc ? desc : '',
       },
     });
     if (result.total) {
@@ -110,7 +127,7 @@ function GoodsCenter(props) {
 
   const onChangePage = (page) => {
     usePageNo(page);
-    getLists(page);
+    getLists({ currentpageNo: page });
   }
 
   const onSearchGoods = () => {
@@ -118,8 +135,16 @@ function GoodsCenter(props) {
     if (searchkey !== key) {
       history.push(`/app/goodscenter?searchkey=${key}`);
       usePageNo(1);
-      getLists();
+      getLists({});
     }
+  }
+
+  const onSortKey = (currentKey, e) => {
+    e.preventDefault();
+    setSortKey(currentKey);
+    getLists({
+      _sortKey: currentKey,
+    });
   }
 
   return (
@@ -132,6 +157,15 @@ function GoodsCenter(props) {
         />
       </div>
       <Spin spinning={loading}>
+        <div className={styles.sortDiv}>
+            <a href="" className={ sortKey == 1 ? styles.aactive : '' } onClick={onSortKey.bind(this, 1)}>热度最高</a>
+            <Divider type="vertical" />
+            <a href="" className={ sortKey == 2 ? styles.aactive : '' } onClick={onSortKey.bind(this, 2)}>最新发布</a>
+            <Divider type="vertical" />
+            <a href="" className={ sortKey == 3 ? styles.aactive : '' } onClick={onSortKey.bind(this, 3)}>价格从高到低</a>
+            <Divider type="vertical" />
+            <a href="" className={ sortKey == 4 ? styles.aactive : '' } onClick={onSortKey.bind(this, 4)}>价格从低到高</a>
+        </div>
         <div className={styles.GoodsProvide} ref={ProviderRef}>
           <div className={styles.GoodsCol} key="1">
             {
