@@ -56,9 +56,12 @@ class LoginPage extends React.Component {
         password,
       },
     });
-    if (result) {
+    if (result && result.data.success) {
       message.success('登录成功');
       history.push('/app');
+      
+    } else {
+      message.error(result.data.msg);
     }
   }
 

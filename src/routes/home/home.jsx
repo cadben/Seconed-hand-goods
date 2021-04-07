@@ -5,6 +5,7 @@ import { category, tag } from '../../models/category';
 import MSearch from '../../components/Search/index';
 import { Link } from 'dva/router';
 import { message } from 'antd';
+import ReactPlayer from 'react-player';
 
 function HomePage(props) {
 
@@ -24,7 +25,6 @@ function HomePage(props) {
 
   const onSearchGoods = (key) => {
     const { history } = props;
-    console.log('搜key', key);
     history.push(`/app/goodscenter?searchkey=${key}`);
   }
 
@@ -88,22 +88,33 @@ function HomePage(props) {
           {
             RecommendLists.map((item, index) => {
               return (<div className={styles.goodItem}>
-                <div className={styles.goodItemSrc} style={{ backgroundImage: `url(${item.imgsrc})` }}></div>
+                <div className={styles.goodItemSrc} style={{ backgroundImage: `url(${item.good_img_src})` }}></div>
                 <div style={{ padding: '0px 20px' }}>
-                  <div className={styles.goodItemTitle}>{item.name}</div>
-                  <div className={styles.goodItemPrice}>¥ {item.price}</div>
+                  <div className={styles.goodItemTitle}>{item.good_name}</div>
+                  <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className={styles.goodItemPrice}>¥ {item.good_out_price}</div>
+                    <div style={{ color: '#494949', fontSize: '12px' }}>{item.school_name}</div>
+                  </div>
                 </div>
               </div>);
             })
           }
         </div>
       </div>
+      <div className={styles.bottomContent}>
+        <h3>校园二手</h3>
+        <ReactPlayer 
+          controls
+          width="1220px"
+          height="440px"
+          url='http://domy-ckf.oss-cn-hangzhou.aliyuncs.com/import/5561811-dd340ac7490af5eca2b2bfb50c24965c.mp4'
+        />
+      </div>
     </div>
   );
 }
 
 const pageMapPropsState = (state) => {
-  console.log(state.auth);
   return {
     RecommendLists: state.GoodsCenter.RecommendLists,
     auth: state.auth,

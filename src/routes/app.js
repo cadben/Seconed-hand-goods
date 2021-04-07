@@ -4,6 +4,7 @@ import { Layout } from 'antd';
 import MHeader from '../components/Header/head';
 import { withRouter } from 'dva/router';
 import styles from './app.less';
+import { getLogin } from '../services/auth';
 
 const { Footer, Content } = Layout;
 
@@ -13,7 +14,17 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props.auth);
+    const result = getLogin();
+    result.then(res => {
+      if (res && res.data && res.data.result.success) {
+        this.props.dispatch({
+          type: 'auth/saveAuth',
+          payload: {
+            user: res.data.result.data,
+          }
+        })
+      }
+    });
   }
 
   render() {

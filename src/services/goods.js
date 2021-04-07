@@ -5,3 +5,7 @@ export function getGoodsLists(data) {
   const query = qs.stringify(data, { encode: false, arrayFormat: 'repeat' });
   return request('/nodeapi/getgoodlists?' + query);
 }
+
+export function getGoodsRand() {
+  return request('/nodeapi/getrand');
+}

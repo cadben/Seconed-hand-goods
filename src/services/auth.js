@@ -20,3 +20,13 @@ export function login(data) {
   });
   return result;
 }
+
+export function getLogin() {
+  const result = request(`/nodeapi/getuser`, {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return result;
+}

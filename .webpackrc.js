@@ -2,6 +2,7 @@ const path = require('path');
 const {name, version} = require('./package.json');
 
 export default {
+  es5ImcompatibleVersions: true,
   entry: 'src/index.js',
   outputPath: 'build',
   publicPath: '/',
