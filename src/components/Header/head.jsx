@@ -52,9 +52,9 @@ function MHeader(props) {
           {
             LinkItems.map((item) => {
               if (!item.childrens) {
-                return (<Link to={item.path}>{item.title}</Link>)
+                return (<Link key={Math.random() * 10000} to={item.path}>{item.title}</Link>)
               } else {
-                return (<Dropdown className="ant-dropdown-link" overlay={MyChilds} placement="bottomRight">
+                return (<Dropdown key={Math.random() * 10000} className="ant-dropdown-link" overlay={MyChilds} placement="bottomRight">
                   <Link to={item.path}>{item.title} <DownOutlined /></Link>
                 </Dropdown>)
               }

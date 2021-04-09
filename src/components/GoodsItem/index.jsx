@@ -1,10 +1,11 @@
 import * as styles from './index.less';
+import dayjs from 'dayjs';
 
 function GoodsItem(props) {
 
-    const { ItemData } = props;
+    const { ItemData, gotoDetail } = props;
     return (
-        <div className={styles.ItemDiv}>
+        <div className={styles.ItemDiv} onClick={gotoDetail}>
             <a>
                 <div className={styles.aItemDiv}>
                     <div style={{ overflow: 'hidden' }}>
@@ -13,7 +14,7 @@ function GoodsItem(props) {
                     <div className={styles.ItemBottom}>
                         <div className={styles.ItemName}>{ItemData.good_name}</div>
                         <div className={styles.timeAndbrose}>
-                            <span>发布于2020-05-09</span>
+                            <span>发布于{dayjs.unix(ItemData.good_create_time).format('YYYY-MM-DD')}</span>
                             <span>{ItemData.good_browse}人浏览</span>
                         </div>
                         <div className={styles.ItemProduce}>{ItemData.good_produce}</div>

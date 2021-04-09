@@ -9,7 +9,7 @@ import styles from './index.less';
 import { Pagination, Spin, Empty, Divider } from 'antd';
 
 function GoodsCenter(props) {
-  const { location, dispatch, goodLists } = props;
+  const { location, dispatch, goodLists, history } = props;
   const { search } = location;
   const { searchkey } = qs.parse(search);
   const [key, useKey] = useState(searchkey);
@@ -28,6 +28,10 @@ function GoodsCenter(props) {
   useEffect(() => {
     getLists({});
   }, []);
+
+  const gotoDetail = (id) => {
+    history.push(`/app/good/${id}`);
+  }
 
   const clear = () => {
     useList1([]);
@@ -171,7 +175,7 @@ function GoodsCenter(props) {
             {
               (list0.length > 0) && list0.map((item, index) => {
                 return (
-                  <GoodsItem ItemData={item}></GoodsItem>
+                  <GoodsItem ItemData={item} key={Math.random() * 10000} gotoDetail={gotoDetail.bind(this, item.good_id)}></GoodsItem>
                 )
               })
             }
@@ -180,7 +184,7 @@ function GoodsCenter(props) {
             {
               (list1.length > 0) && list1.map((item, index) => {
                 return (
-                  <GoodsItem ItemData={item}></GoodsItem>
+                  <GoodsItem ItemData={item} key={Math.random() * 10000} gotoDetail={gotoDetail.bind(this, item.good_id)}></GoodsItem>
                 )
               })
             }
@@ -189,7 +193,7 @@ function GoodsCenter(props) {
             {
               (list2.length > 0) && list2.map((item, index) => {
                 return (
-                  <GoodsItem ItemData={item}></GoodsItem>
+                  <GoodsItem ItemData={item} key={Math.random() * 10000} gotoDetail={gotoDetail.bind(this, item.good_id)}></GoodsItem>
                 )
               })
             }
@@ -198,7 +202,7 @@ function GoodsCenter(props) {
             {
               (list3.length > 0) && list3.map((item, index) => {
                 return (
-                  <GoodsItem ItemData={item}></GoodsItem>
+                  <GoodsItem ItemData={item} key={Math.random() * 10000} gotoDetail={gotoDetail.bind(this, item.good_id)}></GoodsItem>
                 )
               })
             }
@@ -207,7 +211,7 @@ function GoodsCenter(props) {
             {
               (list4.length > 0) && list4.map((item, index) => {
                 return (
-                  <GoodsItem ItemData={item}></GoodsItem>
+                  <GoodsItem ItemData={item} key={Math.random() * 10000} gotoDetail={gotoDetail.bind(this, item.good_id)}></GoodsItem>
                 )
               })
             }

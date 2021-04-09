@@ -1,14 +1,12 @@
-export function debunce(fn, delay) {
-  let timer = null;
-  return function () {
-    if (timer) {
-      clearTimeout(timer);
-    }
-    timer = setTimeout(() => {
-      fn.apply(this, arguments);
-    }, delay);
-  }
-}
+
+export const tags = [
+  '全新',
+  '几乎全新',
+  '轻微使用痕迹',
+  '明显刮擦痕迹',
+  '严重损坏',
+  '其他',
+]
 
 export const publicKey = `MIIDRjCCAjkGByqGSM44BAEwggIsAoIBAQC+CNyjRFHqRrOCeM8V1Ov1GtUDaxzL
 L59Sdxs2UHqNR1Wisqs/vDxlEqMZnqc2qmxzlRBKtTrXFVQxxzwINV2CFu1jMs4j

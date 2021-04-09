@@ -9,3 +9,21 @@ export function getGoodsLists(data) {
 export function getGoodsRand() {
   return request('/nodeapi/getrand');
 }
+
+export function getGoodDetail(goodid) {
+  return request('/nodeapi/getgood?goodId=' + goodid);
+}
+
+export function addComment(content, goodId, user) {
+  return request('/nodeapi/addcomment', {
+    method: 'post',
+    body: JSON.stringify({
+      content,
+      user,
+      goodId,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}

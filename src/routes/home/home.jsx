@@ -40,6 +40,11 @@ function HomePage(props) {
     }
   }
 
+  const gotoDetail = (id) => {
+    const { history } = props;
+    history.push(`/app/good/${id}`);
+  }
+
   const { RecommendLists } = props;
   return (
     <div className={styles.homePage}>
@@ -87,7 +92,7 @@ function HomePage(props) {
         <div className={styles.content}>
           {
             RecommendLists.map((item, index) => {
-              return (<div className={styles.goodItem}>
+              return (<div className={styles.goodItem} onClick={gotoDetail.bind(this, item.good_id)}>
                 <div className={styles.goodItemSrc} style={{ backgroundImage: `url(${item.good_img_src})` }}></div>
                 <div style={{ padding: '0px 20px' }}>
                   <div className={styles.goodItemTitle}>{item.good_name}</div>

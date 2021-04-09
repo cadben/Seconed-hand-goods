@@ -243,12 +243,12 @@ class PublishPage extends React.Component {
                     name="good_condition"
                   >
                     <Radio.Group buttonStyle="solid">
-                      <Radio.Button value="a">全新</Radio.Button>
-                      <Radio.Button value="b">几乎全新</Radio.Button>
-                      <Radio.Button value="c">轻微使用痕迹</Radio.Button>
-                      <Radio.Button value="d">明显刮擦痕迹</Radio.Button>
-                      <Radio.Button value="e">严重损坏</Radio.Button>
-                      <Radio.Button value="f">其他</Radio.Button>
+                      <Radio.Button value="0">全新</Radio.Button>
+                      <Radio.Button value="1">几乎全新</Radio.Button>
+                      <Radio.Button value="2">轻微使用痕迹</Radio.Button>
+                      <Radio.Button value="3">明显刮擦痕迹</Radio.Button>
+                      <Radio.Button value="4">严重损坏</Radio.Button>
+                      <Radio.Button value="5">其他</Radio.Button>
                     </Radio.Group>
                   </Form.Item>
                   <Form.Item

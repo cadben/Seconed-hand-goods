@@ -30,7 +30,11 @@ function RouterConfig({ history, app }) {
     {
       path: '/app/publish',
       component: () => import('./routes/Publish'),
-    }
+    },
+    {
+      path: '/app/good/:goodId',
+      component: () => import('./routes/GoodDetail'),
+    },
   ]
 
   return (
