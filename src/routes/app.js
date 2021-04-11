@@ -16,11 +16,12 @@ class App extends React.Component {
   componentDidMount() {
     const result = getLogin();
     result.then(res => {
-      if (res && res.data && res.data.result.success) {
+      console.log(res);
+      if (res && res.data && res?.data?.success) {
         this.props.dispatch({
           type: 'auth/saveAuth',
           payload: {
-            user: res.data.result.data,
+            user: res.data.data,
           }
         })
       }

@@ -32,7 +32,7 @@ function HomePage(props) {
     e.preventDefault();
     const { history, auth } = props;
     history.push('/app/publish');
-    if (auth && auth.user && auth.user.user_name) {
+    if (auth && auth.user && auth.user.user_nick) {
       history.push('/app/publish');
     } else {
       message.error('请先登录');

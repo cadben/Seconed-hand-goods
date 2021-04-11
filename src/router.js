@@ -35,6 +35,14 @@ function RouterConfig({ history, app }) {
       path: '/app/good/:goodId',
       component: () => import('./routes/GoodDetail'),
     },
+    {
+      path: '/app/my',
+      component: () => import('./routes/My'),
+    },
+    {
+      path: '/app/order',
+      component: () => import('./routes/Order'),
+    }
   ]
 
   return (

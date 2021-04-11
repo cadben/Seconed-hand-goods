@@ -61,7 +61,14 @@ function GoodsCenter(props) {
       message.warn('请先登录');
     }
   }
+  
+  const getConnect = () => {
+    console.log('点击了联系对方');
+  }
 
+  const gotoBuy = () => {
+    console.log('点击了购买');
+  }
   return (
     <div>
       <div style={{ marginTop: '20px' }}>
@@ -94,7 +101,7 @@ function GoodsCenter(props) {
                   <div style={{ fontSize: '16px', marginTop: '15px' }}>
                     {/* <UserOutlined style={{ marginRight: '10px' }}/> */}
                     <span style={{ fontSize: '14px' }}>卖家：</span>
-                    {res.value.data.user_name}
+                    {res.value.data.user_nick}
                   </div>
                   <div style={{ marginTop: '15px' }}>
                     成色：
@@ -123,6 +130,22 @@ function GoodsCenter(props) {
                       ￥{res.value.data.good_in_price}
                     </div>
                   </div>
+                  <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Button
+                      type="default"
+                      size="small"
+                      onClick={getConnect}
+                    >
+                      联系卖家
+                    </Button>
+                    <Button
+                      type="primary"
+                      size="small"
+                      onClick={gotoBuy}
+                    >
+                      立即购买
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div className={styles.user_board}>
@@ -136,7 +159,7 @@ function GoodsCenter(props) {
                       res.value.data.comments.map((item, index) => {
                         return (
                           <div className={styles.commentsItem} key={Math.random() * 1000 + index}>
-                            <h3>{item.user_name}</h3>
+                            <h3>{item.user_nick}</h3>
                             <div>{item.comment_content}</div>
                             <div style={{ color: '#808695' }}>{dayjs.unix(item.comment_create_time).format('YYYY-MM-DD')}</div>
                             {

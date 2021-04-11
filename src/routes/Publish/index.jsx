@@ -54,7 +54,7 @@ class PublishPage extends React.Component {
             ctx.textBaseline = 'middle';
             console.log(canvas.width);
             ctx.font = (Number(canvas.width / 100) + 12) + 'px Arial';
-            ctx.fillText(`在线二货交易@${auth.user.user_name}`, 20, 20);
+            ctx.fillText(`在线二货交易@${auth.user.user_nick}`, 20, 20);
             canvas.toBlob(resolve);
           };
         };

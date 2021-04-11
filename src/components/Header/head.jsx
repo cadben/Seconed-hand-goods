@@ -11,14 +11,6 @@ const { Header } = Layout;
 function MHeader(props) {
   const LinkItems = [
     {
-      title: '购物车',
-      path: '/app/my/shopcar',
-    },
-    {
-      title: '我的订单',
-      path: '/app/my/orders',
-    },
-    {
       title: '我的',
       path: '/app/my',
       childrens: true,
@@ -27,7 +19,7 @@ function MHeader(props) {
   const MyChilds = (
     <Menu>
       <MenuItem>
-        <Link to='/app/my/favorite'>个人收藏</Link>
+        <Link to='/app/my?status=1'>收货地址</Link>
       </MenuItem>
     </Menu>
   )
@@ -42,8 +34,8 @@ function MHeader(props) {
           {
             <span className={styles.login_tip}>你好
               {
-                !(user && user.user_name) ? <Link to="/app/login" style={{ textDecoration: 'underline' }}>  请登陆</Link> :
-                <Link to="/app/my" style={{ textDecoration: 'underline' }}>  {user.user_name}</Link>
+                !(user && user.user_nick) ? <Link to="/app/login" style={{ textDecoration: 'underline' }}>  请登陆</Link> :
+                <Link to="/app/my" style={{ textDecoration: 'underline' }}>  {user.user_nick}</Link>
               }
             </span>
           }
