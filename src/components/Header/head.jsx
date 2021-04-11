@@ -16,10 +16,15 @@ function MHeader(props) {
       childrens: true,
     },
   ]
+  const to = (v, e) => {
+    e.preventDefault();
+    window.location.href = v;
+  }
+
   const MyChilds = (
     <Menu>
       <MenuItem>
-        <Link to='/app/my?status=1'>收货地址</Link>
+        <a onClick={to.bind(this, '/app/my?status=1')}>收货地址</a>
       </MenuItem>
     </Menu>
   )
@@ -30,12 +35,12 @@ function MHeader(props) {
     <Header>
       <div className={styles.header}>
         <div className={styles.headerLeft}>
-          <Link to="/app">首页</Link>
+          <a onClick={to.bind(this, "/app")}>首页</a>
           {
             <span className={styles.login_tip}>你好
               {
-                !(user && user.user_nick) ? <Link to="/app/login" style={{ textDecoration: 'underline' }}>  请登陆</Link> :
-                <Link to="/app/my" style={{ textDecoration: 'underline' }}>  {user.user_nick}</Link>
+                !(user && user.user_nick) ? <a onClick={to.bind(this, "/app/login")} style={{ textDecoration: 'underline' }}>  请登陆</a> :
+                <a onClick={to.bind(this, "/app/my")} style={{ textDecoration: 'underline' }}>  {user.user_nick}</a>
               }
             </span>
           }
@@ -44,10 +49,10 @@ function MHeader(props) {
           {
             LinkItems.map((item) => {
               if (!item.childrens) {
-                return (<Link key={Math.random() * 10000} to={item.path}>{item.title}</Link>)
+                return (<a key={Math.random() * 10000} onClick={to.bind(this, item.path)}>{item.title}</a>)
               } else {
                 return (<Dropdown key={Math.random() * 10000} className="ant-dropdown-link" overlay={MyChilds} placement="bottomRight">
-                  <Link to={item.path}>{item.title} <DownOutlined /></Link>
+                  <a onClick={to.bind(this, item.path)}>{item.title} <DownOutlined /></a>
                 </Dropdown>)
               }
             })

@@ -27,7 +27,7 @@ function My(props) {
           });
         } else {
           message.warn('请先登录');
-          window.location.href = '/app/login';
+          props.history.push('/app/login');
         }
       });
     }
@@ -52,8 +52,8 @@ function My(props) {
   const [phone, setPhone] = useState('');
   const [address, setaddress] = useState('');
 
-  console.log(tabsKey);
-
+  console.log(user);
+  
   const getAddressFunc = async () => {
     if (Object.keys(user).length === 0) {
       const result = getLogin();
@@ -91,7 +91,7 @@ function My(props) {
     const res = await LoginOut();
     if (res.data.success) {
       message.success('退出登录成功');
-      window.location.href = '/app';
+      props.history.push('/app');
     }
   }
 
@@ -118,7 +118,7 @@ function My(props) {
       });
       if (result && result.data.success) {
         message.success('验证成功');
-        window.location.href = '/app/my';
+        props.history.push('/app/my');
       } else {
         message.error(result.data.msg);
       }

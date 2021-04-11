@@ -1,0 +1,98 @@
+.OrderStatusontent{
+  width: 960px;
+  margin: 0 auto;
+  min-height: 300px;
+  :global(.ant-steps) {
+    margin: 20px 0px;
+  }
+  .orderContent{
+    width: 960px;
+    margin: 20px auto;
+    padding: 20px;
+    min-height: 150px;
+    border: 1px solid #f58b29;
+    background: #fff9f4;
+    font-weight: 600;
+  }
+  .item{
+    color: #e4802f;
+  }
+  &::after {
+    content: "";
+    display: block;
+    height: 0;
+    clear:both;
+    visibility: hidden;
+  }
+  .gotoPay{
+    width: 130px;
+    height: 38px;
+    background-color: #f3984d;
+    border-radius: 5px;
+    line-height: 38px;
+    text-align: center;
+    color: #fff9f4;
+    cursor: pointer;
+  }
+}
+
+.verifyOrder{
+  border: 1px solid #cccbcb;
+  // padding: 20px;
+}
+.orderHeader{
+  display: flex;
+  height: 32px;
+  overflow: hidden;
+  border-bottom: 1px solid #e9e9e9;
+  border-top: 1px solid #e9e9e9;
+  background: #f8f8f8;
+  font-size: 14px;
+  line-height: 32px;
+  text-align: center;
+  span{
+    text-align: center;
+    flex: 1;
+  }
+}
+.generateItem{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.orderContent2{
+  display: flex;
+  background: #fff9f4;
+  div{
+    flex: 1;
+  }
+  .good_detail {
+    flex: 3;
+  }
+}
+.good_detail{
+  display: flex;
+  img{
+    margin-right: 20px;
+    padding: 10px;
+    width: auto;  
+    height: auto;  
+    max-width: 25%;  
+    max-height: 100%;    
+  }
+  div{
+    text-align: left;
+  }
+  .detail {
+    padding: 10px 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+.orderFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}

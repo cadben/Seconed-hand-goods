@@ -3,10 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import MSearch from '../../components/PSearch';
 import styles from './index.less';
-import { Steps, Row, Col, Tag, Input, message } from 'antd';
+import { Steps, Row, Col, Tag, Input, message, Spin } from 'antd';
 // import { UserOutlined, AccountBookOutlined } from '@ant-design/icons';
 import { getLogin, getAddress } from '../../services/auth';
-import { getGoodDetail } from '../../services/goods';
+import { getGoodDetail, handleSubmitOrder } from '../../services/goods';
 
 function Order(props) {
 
@@ -20,6 +20,7 @@ function Order(props) {
   const [activeAddress, setActiveAddress] = useState(0);
   const [data, setData] = useState({});
   const [text, setText] =useState('');
+  const [loading, setLoading] = useState(false);
 
   const onChange = (e) => {
     setText(e.target.value);
@@ -59,16 +60,22 @@ function Order(props) {
 
   const onSearchGoods = () => {
     const { history } = props;
-    history.push(`/app/goodscenter?searchkey=${key}`);
+    window.location.href = (`/app/goodscenter?searchkey=${key}`);
   }
 
-  const handleSubmitOrder = () => {
-    if (!activeAddress) {
-      message.warn('还未选择收货地址');
-      return ;
+  const onhandleSubmitOrder = async () => {
+    setLoading(true);
+    const result = await handleSubmitOrder(data.good_id, props.auth.user.user_id, data.good_user, Address[activeAddress], text, (data.good_out_price + data.good_transportation_price));
+    if (result && result.data.success) {
+      setTimeout(() => {
+        message.success('提交成功');
+        window.location.href = '/app/order/status?orderId=' + result.data.orderId;
+        setLoading(false);
+      });
+    } else {
+      message.success('提交失败');
+      setLoading(false);
     }
-    console.log(text, data);
-    message.success('提交成功');
   }
 
   return (
@@ -84,8 +91,9 @@ function Order(props) {
         <Steps current={1} size="small">
           <Steps.Step title="和卖家沟通完毕" description="已经了解商品基本情况" />
           <Steps.Step title="买家下单" description="选择收货地址以及确定订单" />
+          <Steps.Step title="买家支付" />
           <Steps.Step title="卖家发货" />
-          <Steps.Step title="卖家确认" />
+          <Steps.Step title="买家确认" />
         </Steps>
         <div className={styles.verifyAddress}>
           <h3>核对收货人信息</h3>
@@ -94,7 +102,7 @@ function Order(props) {
               Address.length ? Address.map((item, index) => {
                 return (
                   <Col span={8} >
-                    <div onClick={() => { setActiveAddress(item.id); }} className={`${styles.addressItem} ${activeAddress === item.id ? styles.activeAddressItem : ''}`} key={Math.floor(Math.random() * 10000)}>
+                    <div onClick={() => { setActiveAddress(index); }} className={`${styles.addressItem} ${activeAddress === index ? styles.activeAddressItem : ''}`} key={Math.floor(Math.random() * 10000)}>
                       <div>收货人：{item.user_name}</div>
                       <div>联系电话：{item.user_phone}</div>
                       <div>收货地址：{item.address}</div>
@@ -146,8 +154,10 @@ function Order(props) {
           <div className={styles.OrderComment}>
             <Input.TextArea placeholder="给卖家留言" value={text} showCount maxLength={100} onChange={onChange} />
           </div>
-          <div className={styles.addOrderBt} onClick={handleSubmitOrder}>
-            提交订单
+          <div className={styles.addOrderBt} onClick={onhandleSubmitOrder}>
+            <Spin spinning={loading}>
+              提交订单
+            </Spin>
           </div>
         </div>
       </div>

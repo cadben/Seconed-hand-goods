@@ -14,18 +14,19 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    const result = getLogin();
-    result.then(res => {
-      console.log(res);
-      if (res && res.data && res?.data?.success) {
-        this.props.dispatch({
-          type: 'auth/saveAuth',
-          payload: {
-            user: res.data.data,
-          }
-        })
-      }
-    });
+    if (Object.keys(this.props.auth.user).length === 0) {
+      const result = getLogin();
+      result.then(res => {
+        if (res && res.data && res?.data?.success) {
+          this.props.dispatch({
+            type: 'auth/saveAuth',
+            payload: {
+              user: res.data.data,
+            }
+          })
+        }
+      });
+    }
   }
 
   render() {

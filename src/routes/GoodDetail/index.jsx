@@ -67,7 +67,13 @@ function GoodsCenter(props) {
   }
 
   const gotoBuy = () => {
-    console.log('点击了购买');
+    const { user } = props.auth;
+    if (Object.keys(user).length === 0) {
+      message.warn('你还未登录，请先登录');
+      props.history.push("/app/login");
+    } else {
+      props.history.push('/app/order?goodId=' + res.value.data.good_id);
+    }
   }
   return (
     <div>

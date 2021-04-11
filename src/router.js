@@ -42,6 +42,14 @@ function RouterConfig({ history, app }) {
     {
       path: '/app/order',
       component: () => import('./routes/Order'),
+    },
+    {
+      path: '/app/order/status',
+      component: () => import('./routes/OrderStatus'),
+    },
+    {
+      path: '/app/order/detail',
+      component: () => import('./routes/OrderDetail'),
     }
   ]
 

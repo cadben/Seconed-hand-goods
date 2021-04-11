@@ -1,0 +1,37 @@
+.OrderStatusontent{
+  width: 960px;
+  margin: 0 auto;
+  min-height: 300px;
+  :global(.ant-steps) {
+    margin: 20px 0px;
+  }
+  .orderContent{
+    width: 960px;
+    margin: 20px auto;
+    padding: 20px;
+    min-height: 150px;
+    border: 1px solid #f58b29;
+    background: #fff9f4;
+    font-weight: 600;
+  }
+  .item{
+    color: #e4802f;
+  }
+  &::after {
+    content: "";
+    display: block;
+    height: 0;
+    clear:both;
+    visibility: hidden;
+  }
+  .gotoPay{
+    width: 130px;
+    height: 38px;
+    background-color: #f3984d;
+    border-radius: 5px;
+    line-height: 38px;
+    text-align: center;
+    color: #fff9f4;
+    cursor: pointer;
+  }
+}

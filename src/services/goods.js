@@ -27,3 +27,38 @@ export function addComment(content, goodId, user) {
     },
   });
 }
+
+export function handleSubmitOrder(goodId, userId, goodUserId, addressObj, comments, totalPrice) {
+  return request('/nodeapi/addorder', {
+    method: 'post',
+    body: JSON.stringify({
+      goodId,
+      userId,
+      goodUserId,
+      comments,
+      addressObj,
+      totalPrice,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+}
+
+export function getOrderDetail(orderId) {
+  return request('/nodeapi/getorder?orderId=' + orderId);
+}
+
+export function gotoPay(orderId, name, price) {
+  return request('/nodeapi/aliPay', {
+    method: 'post',
+    body: JSON.stringify({
+      orderId,
+      name,
+      price
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+}
