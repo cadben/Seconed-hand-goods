@@ -31,9 +31,14 @@ function HomePage(props) {
   const goToPublish = (e) => {
     e.preventDefault();
     const { history, auth } = props;
-    history.push('/app/publish');
+    // history.push('/app/publish');
     if (auth && auth.user && auth.user.user_nick) {
-      history.push('/app/publish');
+      if (auth.user.user_verify == 0) {
+        message.warn('请先进行个人认证');
+        window.location.href = '/app/my';
+      } else {
+        history.push('/app/publish');
+      }
     } else {
       message.error('请先登录');
       history.push('/app/login');
