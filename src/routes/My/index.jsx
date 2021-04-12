@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import MSearch from '../../components/PSearch';
 import styles from './index.less';
-import { Button, Empty, Input, message, Tag } from 'antd';
+import { Button, Empty, Input, message, Tag, Popconfirm } from 'antd';
 import { LoginOut, verify, getLogin, getAddress, addAddress, deleteAddress } from '../../services/auth';
+import GoodsItem from '../../components/GoodsItem/index';
 import { Tabs, Modal } from 'antd';
 import request from '../../utils/request';
 import SchoolSearch from '../../components/SchoolSearch';
@@ -53,6 +54,7 @@ function My(props) {
   const [getname, setGetName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setaddress] = useState('');
+  const [myGoods, setMyGoods] = useState([]);
 
   const getAddressFunc = async () => {
     if (Object.keys(user).length === 0) {
@@ -63,6 +65,8 @@ function My(props) {
           setAddress(result2.data);
           const result3 = await request('/nodeapi/getallorder?userId=' + res.data.data.user_id);
           setOrderList(result3);
+          const result4 = await request('/nodeapi/getowngoods?userId=' + res.data.data.user_id);
+          setMyGoods(result4);
         }
       });
     } else {
@@ -240,6 +244,7 @@ function My(props) {
             {user.school_name && <div style={{ marginTop: '10px' }}>学校：{user.school_name}</div>}
           </div>
           <div className={styles.orderContent}>
+            <h3>我买到的</h3>
             <div className={styles.orderContentHeader}>
               <span style={{ flex: '3' }}>商品名称</span>
               <span>单价（元）</span>
@@ -286,6 +291,48 @@ function My(props) {
                 )
               })
             }
+          </div>
+          <div className={styles.orderGoods}>
+            <h3>我卖出的</h3>
+            <div className={styles.orderGoodList}>
+            {
+              myGoods && myGoods.data && myGoods.data.data.map((item, index) => {
+                return (
+                    <div style={{ position: 'relative' }}>
+                      <GoodsItem ItemData={item} key={Math.random() * 10000} gotoDetail={() => { window.location.href = '/app/good/' + item.good_id }}></GoodsItem>
+                      <Button 
+                        style={{ position: 'absolute', top: '10px', left: '10px' }}
+                        type="primary" size="small" onClick={
+                        async (e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const res = await request('/nodeapi/deletegood', {
+                            method: 'post',
+                            body: JSON.stringify({
+                              id: item.good_id,
+                            }),
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                          });
+                          if (res && res.data && res.data.success) {
+                            message.success('删除成功');
+                            const List = myGoods.data.data.filter((item2) => {
+                                return item.good_id != item2.good_id;
+                              });
+                            const oldGoodList =  JSON.parse(JSON.stringify(myGoods));
+                            oldGoodList.data.data = List;
+                            setMyGoods(oldGoodList);
+                          } else {
+                            message.error('删除失败');
+                          }
+                        }
+                      }>删除商品</Button>
+                    </div>
+                  )
+                })
+            }
+            </div>
           </div>
           <Button
             className={styles.loginout}
