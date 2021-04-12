@@ -62,3 +62,37 @@ export function gotoPay(orderId, name, price) {
     },
   })
 }
+
+export function addGood({
+  good_name,
+  good_category,
+  good_brand,
+  good_in_price,
+  good_out_price,
+  good_transport,
+  good_produce,
+  good_condition,
+  user_school,
+  user_id,
+  imgs,
+}) {
+  return request('/nodeapi/addgood', {
+    method: 'post',
+    body: JSON.stringify({
+      good_name,
+      good_category,
+      good_brand,
+      good_in_price,
+      good_out_price,
+      good_transport,
+      good_produce,
+      good_condition,
+      user_school,
+      user_id,
+      imgs,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+}

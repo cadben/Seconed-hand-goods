@@ -7,6 +7,7 @@ import styles from './index.less';
 import OSS from 'ali-oss';
 import { v4 as uuidv4 } from 'uuid';
 import { getOSSSTS, getBaiduVerift, getGoodPrice } from '../../services/oss';
+import { addGood } from '../../services/goods';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -139,9 +140,25 @@ class PublishPage extends React.Component {
     })
   }
 
-  onFinishLogin = () => {
+  onFinishLogin = async () => {
     const { getFieldsValue } = this.PublishForm.current;
-    console.log(getFieldsValue('goods_form'));
+    if (this.state.fileList.length < 1) {
+      message.warn('必须上传至少一张图片');
+      return;
+    }
+    const form = getFieldsValue('goods_form');
+
+    const res = await addGood(Object.assign(form, {
+      user_school: this.props.auth.user.school_id,
+      user_id: this.props.auth.user.user_id,
+      imgs: this.state.fileList,
+    }));
+    if (res && res.data && res.data.success) {
+      message.success('发布成功！');
+      this.props.history.push('/app/good/' + res.data.goodId);
+    } else {
+      message.error('发布失败');
+    }
   }
 
   render() {
@@ -241,6 +258,7 @@ class PublishPage extends React.Component {
                   <Form.Item
                     label="成色"
                     name="good_condition"
+                    rules={[{ required: true, message: '请选择成色' }]}
                   >
                     <Radio.Group buttonStyle="solid">
                       <Radio.Button value="0">全新</Radio.Button>
@@ -254,6 +272,7 @@ class PublishPage extends React.Component {
                   <Form.Item
                     label="出售价格"
                     name="good_out_price"
+                    rules={[{ required: true, message: '出售价格不能为空' }]}
                   >
                     <div
                       style={{ fontSize: '16px' }}
@@ -276,16 +295,18 @@ class PublishPage extends React.Component {
                   <Form.Item
                     label="邮费"
                     name="good_transport"
+                    rules={[{ required: true, message: '邮费不能为空' }]}
                   >
                     <div
                       style={{ fontSize: '16px' }}
                     >
-                       <InputNumber defaultValue={0} min={0} max={9999999} step={1} style={{ marginLeft: '5px', marginRight: '5px' }}/>
+                       <InputNumber min={0} max={9999999} step={1} style={{ marginLeft: '5px', marginRight: '5px' }}/> 元
                     </div>
                   </Form.Item>
                   <Form.Item
                     label="商品描述"
                     name="good_produce"
+                    rules={[{ required: true, message: '添加详细的商品描述可以更好卖出噢' }]}
                   >
                     <Input.TextArea rows={4}/>
                   </Form.Item>

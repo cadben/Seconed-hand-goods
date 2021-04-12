@@ -11,6 +11,5 @@ export const tags = [
 export const status = [
   '未付款',
   '已付款',
-  '商家已发货',
   '已完成',
 ]

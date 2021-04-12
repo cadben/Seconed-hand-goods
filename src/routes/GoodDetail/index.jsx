@@ -8,6 +8,7 @@ import { getGoodDetail, addComment } from '../../services/goods';
 import { Button, Divider, Empty, Input, Spin, Tag, Modal, message } from 'antd';
 import { tags } from '../../utils/util';
 import dayjs from 'dayjs';
+import { Redirect } from 'react-router';
 
 // import { UserOutlined, AccountBookOutlined } from '@ant-design/icons';
 
@@ -72,7 +73,11 @@ function GoodsCenter(props) {
       message.warn('你还未登录，请先登录');
       props.history.push("/app/login");
     } else {
-      props.history.push('/app/order?goodId=' + res.value.data.good_id);
+      if (user.user_id == res.value.data.good_user) {
+        message.warn('不能购买自己发布的商品');
+      } else {
+        window.location.href = ('/app/order?goodId=' + res.value.data.good_id);
+      }
     }
   }
   return (

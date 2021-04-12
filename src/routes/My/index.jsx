@@ -3,15 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import MSearch from '../../components/PSearch';
 import styles from './index.less';
-import { Button, Empty, Input, message } from 'antd';
+import { Button, Empty, Input, message, Tag } from 'antd';
 import { LoginOut, verify, getLogin, getAddress, addAddress, deleteAddress } from '../../services/auth';
 import { Tabs, Modal } from 'antd';
 import request from '../../utils/request';
 import SchoolSearch from '../../components/SchoolSearch';
+import dayjs from '_dayjs@1.10.4@dayjs';
+import { status as OrderStatus } from '../../utils/util';
 // import { UserOutlined, AccountBookOutlined } from '@ant-design/icons';
 
 function My(props) {
-  
+
   const { auth } = props;
   const { user } = auth;
   useEffect(() => {
@@ -46,14 +48,12 @@ function My(props) {
   const [verifyVisiable, setVerifyVisiable] = useState(false);
   const [school, setSchool] = useState('');
   const [Address, setAddress] = useState([]);
-  const [refresh, setRefresh] = useState(1);
+  const [orderList, setOrderList] = useState([]);
   const [addAddressVisible, setAddressVisible] = useState(false);
   const [getname, setGetName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setaddress] = useState('');
 
-  console.log(user);
-  
   const getAddressFunc = async () => {
     if (Object.keys(user).length === 0) {
       const result = getLogin();
@@ -61,18 +61,21 @@ function My(props) {
         if (res && res.data && res?.data?.success) {
           const result2 = await getAddress({ userId: res.data.data.user_id });
           setAddress(result2.data);
+          const result3 = await request('/nodeapi/getallorder?userId=' + res.data.data.user_id);
+          setOrderList(result3);
         }
       });
     } else {
       const result2 = await getAddress({ userId: user.user_id });
       setAddress(result2.data);
+      const result3 = await request('/nodeapi/getallorder?userId=' + user.user_id);
+      setOrderList(result3.data);
     }
   }
 
   useEffect(() => {
     getAddressFunc();
   }, []);
-
 
   const onChangeKey = (currentKey) => {
     useKey(currentKey);
@@ -163,6 +166,54 @@ function My(props) {
       }
     }
   }
+
+  const handleDeleteOrder = async (id) => {
+    const res = await request('/nodeapi/deleteorder', {
+      method: 'post',
+      body: JSON.stringify({
+        id,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (res && res.data.success) {
+      message.success('删除成功');
+      const List = orderList.data.data.filter((item) => {
+        return item.good_order_id != id;
+      });
+      const oldOrderList =  JSON.parse(JSON.stringify(orderList));
+      oldOrderList.data.data = List;
+      setOrderList(oldOrderList);
+    } else {
+      message.error('删除失败');
+    }
+  }
+
+  const handleOKOrder = async (id) => {
+    const res = await request('/nodeapi/okorder', {
+      method: 'post',
+      body: JSON.stringify({
+        id,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (res && res.data.success) {
+      message.success('修改成功');
+      const oldOrderList =  JSON.parse(JSON.stringify(orderList));
+      oldOrderList.data.data.forEach((item) => {
+        if (item.good_order_id == id) {
+          item.order_status = 2;
+        }
+      });
+      setOrderList(oldOrderList);
+    } else {
+      message.error('修改失败');
+    }
+  }
+
   return (
     <div>
       <div style={{ marginTop: '20px' }}>
@@ -188,6 +239,54 @@ function My(props) {
             <div style={{ marginTop: '10px' }}>手机号：{user.user_phone ? user.user_phone : '未认证'}</div>
             {user.school_name && <div style={{ marginTop: '10px' }}>学校：{user.school_name}</div>}
           </div>
+          <div className={styles.orderContent}>
+            <div className={styles.orderContentHeader}>
+              <span style={{ flex: '3' }}>商品名称</span>
+              <span>单价（元）</span>
+              <span>数量</span>
+              <span>实付金额（元）</span>
+              <span>订单状态</span>
+              <span>订单操作</span>
+            </div>
+            {
+              orderList.data && orderList.data.data && orderList.data.data.map((item, index) => {
+                return (
+                  <div className={styles.orderItem}>
+                    <div className={styles.orderItemHeader}>
+                      <span style={{ color: '#999999' }}>订单时间：{dayjs.unix(item.order_create_time).format('YYYY-MM-DD')}</span>
+                      <span>订单编号：{item.good_order_id}</span>
+                      <span>卖家：{item.good_nick_name}</span>
+                    </div>
+                    <div>
+                      <div className={styles.orderContent2}>
+                        <div className={styles.good_detail}>
+                          <img
+                              alt=""
+                              src={item.img}
+                          />
+                          <div className={styles.detail}>
+                            <div>{item.good_name}</div>
+                            <div style={{ color: 'grey' }}>{item.good_category}</div>
+                          </div>
+                        </div>
+                        <div className={styles.generateItem}>￥{item.good_out_price?.toFixed(2)}</div>
+                        <div className={styles.generateItem}>1</div>
+                        <div className={styles.generateItem}>￥{item.good_out_price?.toFixed(2)}</div>
+                        <div className={styles.generateItem}>
+                          <Tag color="#eb9a4e">{OrderStatus[Number(item.order_status)]}</Tag>
+                          <a onClick={(e) => { e.preventDefault(); window.location.href = '/app/order/detail?orderId=' + item.good_order_id } }>查看订单</a>
+                        </div>
+                        <div className={styles.generateItem}>
+                          <Button onClick={handleOKOrder.bind(this, item.good_order_id)} size="small" style={{ fontSize: '12px', color: '#fff', background: '#FF661A' }}>确认收货</Button>
+                          <Button onClick={handleDeleteOrder.bind(this, item.good_order_id)} size="small" style={{ fontSize: '12px', color: '#000', marginTop: '5px' }}>删除订单</Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })
+            }
+          </div>
           <Button
             className={styles.loginout}
             type="primary"
@@ -202,18 +301,18 @@ function My(props) {
               Address.length ? Address.map((item, index) => {
                 return (
                   <div className={styles.addressItem} key={Math.floor(Math.random() * 10000)}>
-                     <div>收货人：{item.user_name}</div>
-                     <div>联系电话：{item.user_phone}</div>
-                     <div>收货地址：{item.address}</div>
-                     <Button type="primary" size="small" onClick={async () => {
-                        const result = await deleteAddress({ userid: user.user_id, id: item.id });
-                        if (result && result.data.success) {
-                          getAddressFunc();
-                          message.success('删除成功');
-                        } else {
-                          message.error('删除失败');
-                        }
-                     }}>删除</Button>
+                    <div>收货人：{item.user_name}</div>
+                    <div>联系电话：{item.user_phone}</div>
+                    <div>收货地址：{item.address}</div>
+                    <Button type="primary" size="small" onClick={async () => {
+                      const result = await deleteAddress({ userid: user.user_id, id: item.id });
+                      if (result && result.data.success) {
+                        getAddressFunc();
+                        message.success('删除成功');
+                      } else {
+                        message.error('删除失败');
+                      }
+                    }}>删除</Button>
                   </div>
                 )
               }) : <Empty></Empty>
@@ -227,44 +326,44 @@ function My(props) {
       {
         verifyVisiable && (
           <Modal
-              maskClosable={false}
-              visible={verifyVisiable}
-              onCancel={() => setVerifyVisiable(false)}
-              onOk={onVerify}
-              centered
-              title="实名认证"
-            >
-              <div className={styles.tips}>
-                身份认证的好处：
-                未认证的账号无法进行购买和发布，为了让他人对您的买卖更放心，请先认证
+            maskClosable={false}
+            visible={verifyVisiable}
+            onCancel={() => setVerifyVisiable(false)}
+            onOk={onVerify}
+            centered
+            title="实名认证"
+          >
+            <div className={styles.tips}>
+              身份认证的好处：
+              未认证的账号无法进行购买和发布，为了让他人对您的买卖更放心，请先认证
               </div>
-              <SchoolSearch
-                value={school}
-                changeSchool={changeSchool}
+            <SchoolSearch
+              value={school}
+              changeSchool={changeSchool}
+              style={{ marginTop: '15px', marginBottom: '15px' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              真实姓名：<Input
+                onChange={(e) => { setName(e.target.value) }}
+                value={name}
+                maxLength={10}
+              >
+              </Input>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              edu邮箱：<Input
+                maxLength={50}
+                addonAfter=".edu.cn"
+                onChange={(e) => { setText(e.target.value) }}
+                value={text}
                 style={{ marginTop: '15px', marginBottom: '15px' }}
               />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                真实姓名：<Input
-                  onChange={(e) => { setName(e.target.value) }}
-                  value={name}
-                  maxLength={10}
-                >
-                </Input>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                edu邮箱：<Input
-                  maxLength={50}
-                  addonAfter=".edu.cn"
-                  onChange={(e) => { setText(e.target.value) }}
-                  value={text}
-                  style={{ marginTop: '15px', marginBottom: '15px' }}
-                />
-              </div>
-              
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                 验证码：
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              验证码：
                  <div style={{ display: 'flex', width: '80%' }}>
-                   <Input
+                <Input
                   maxLength={6}
                   onChange={(e) => { setCode(e.target.value) }}
                   value={code}
@@ -304,47 +403,47 @@ function My(props) {
                     ifgetcode ? `${time}秒后可以重新获取` : '获取验证码'
                   }
                 </Button>
-                </div>
               </div>
-              
+            </div>
+
           </Modal>
         )
       }
       {
         addAddressVisible && (
           <Modal
-              destroyOnClose
-              maskClosable={false}
-              visible={addAddressVisible}
-              onCancel={() => setAddressVisible(false)}
-              onOk={handleAddAddress}
-              centered
-              title="添加地址"
-            >
-              <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                收货人姓名：<Input
-                  onChange={(e) => { setGetName(e.target.value) }}
-                  value={getname}
-                  maxLength={10}
-                >
-                </Input>
-              </div>
-              <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                手机号：<Input
-                  onChange={(e) => { setPhone(e.target.value) }}
-                  value={phone}
-                  maxLength={20}
-                >
-                </Input>
-              </div>
-              <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                详细地址：<Input
-                  onChange={(e) => { setaddress(e.target.value) }}
-                  value={address}
-                  maxLength={100}
-                >
-                </Input>
-              </div>
+            destroyOnClose
+            maskClosable={false}
+            visible={addAddressVisible}
+            onCancel={() => setAddressVisible(false)}
+            onOk={handleAddAddress}
+            centered
+            title="添加地址"
+          >
+            <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              收货人姓名：<Input
+                onChange={(e) => { setGetName(e.target.value) }}
+                value={getname}
+                maxLength={10}
+              >
+              </Input>
+            </div>
+            <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              手机号：<Input
+                onChange={(e) => { setPhone(e.target.value) }}
+                value={phone}
+                maxLength={20}
+              >
+              </Input>
+            </div>
+            <div style={{ marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              详细地址：<Input
+                onChange={(e) => { setaddress(e.target.value) }}
+                value={address}
+                maxLength={100}
+              >
+              </Input>
+            </div>
           </Modal>
         )
       }
