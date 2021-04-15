@@ -3,14 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import MSearch from '../../components/PSearch';
 import styles from './index.less';
-import { Button, Empty, Input, message, Tag, Popconfirm } from 'antd';
+import { Button, Empty, Input, message, Tag, Divider } from 'antd';
 import { LoginOut, verify, getLogin, getAddress, addAddress, deleteAddress } from '../../services/auth';
 import GoodsItem from '../../components/GoodsItem/index';
 import { Tabs, Modal } from 'antd';
 import request from '../../utils/request';
 import SchoolSearch from '../../components/SchoolSearch';
-import dayjs from '_dayjs@1.10.4@dayjs';
+import dayjs from 'dayjs';
 import { status as OrderStatus } from '../../utils/util';
+import { UserOutlined } from '@ant-design/icons';
+import socket from 'socket.io-client';
 // import { UserOutlined, AccountBookOutlined } from '@ant-design/icons';
 
 function My(props) {
@@ -38,9 +40,9 @@ function My(props) {
 
   const url = new URL(window.location.href);
   const status = url.searchParams.get('status');
-  const isAddress = status == '1';
+  const receive = url.searchParams.get('receive');
   const [key, useKey] = useState('');
-  const [tabsKey, setTabsKey] = useState(isAddress ? '2' : '1');
+  const [tabsKey, setTabsKey] = useState(!status ? '1' : status == '1' ? '2' : '3');
   const [text, setText] = useState('');
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
@@ -55,6 +57,18 @@ function My(props) {
   const [phone, setPhone] = useState('');
   const [address, setaddress] = useState('');
   const [myGoods, setMyGoods] = useState([]);
+  const [chatText, setChatText] = useState('');
+  const [Client, setClient] = useState(null);
+  const [receiver, setReceiver] = useState(receive);
+  const [chatContentList, setChatContentList] = useState([]);
+  const [selectRec, setSelectRec] = useState(0);
+  const [userList, setUserList] = useState([]); 
+  const [allChat, setAllChat] = useState(null);
+
+  useEffect(() => {
+    const res = fetch('/nodeapi/getchat?user=' + user.user_id);
+    console.log(res);
+  }, []);
 
   const getAddressFunc = async () => {
     if (Object.keys(user).length === 0) {
@@ -67,6 +81,8 @@ function My(props) {
           setOrderList(result3);
           const result4 = await request('/nodeapi/getowngoods?userId=' + res.data.data.user_id);
           setMyGoods(result4);
+          const result5 = await request('/nodeapi/getchatperson?user=' + res.data.data.user_id );
+          setUserList(result5.data);
         }
       });
     } else {
@@ -186,7 +202,7 @@ function My(props) {
       const List = orderList.data.data.filter((item) => {
         return item.good_order_id != id;
       });
-      const oldOrderList =  JSON.parse(JSON.stringify(orderList));
+      const oldOrderList = JSON.parse(JSON.stringify(orderList));
       oldOrderList.data.data = List;
       setOrderList(oldOrderList);
     } else {
@@ -206,7 +222,7 @@ function My(props) {
     });
     if (res && res.data.success) {
       message.success('修改成功');
-      const oldOrderList =  JSON.parse(JSON.stringify(orderList));
+      const oldOrderList = JSON.parse(JSON.stringify(orderList));
       oldOrderList.data.data.forEach((item) => {
         if (item.good_order_id == id) {
           item.order_status = 2;
@@ -217,6 +233,39 @@ function My(props) {
       message.error('修改失败');
     }
   }
+
+  useEffect(() => {
+    const client = socket('ws://localhost:3000', {
+      transports: ['websocket']
+    });
+    client.on("connect", function () {
+      // console.log(socket.broadcast)
+      let arr = [];
+      client.on('sendOtherText', (msg) => {
+        if (msg) {
+          console.log(msg);
+          const data = JSON.parse(msg);
+          arr.push(data);
+          setChatContentList([...arr]);
+        }
+      })
+    });
+    setClient(client);
+  }, []);
+
+  const handleSendMsg = async () => {
+    if (!chatText) {
+      message.error('请不要发送空信息');
+      return;
+    }
+    if (!chatContentList[receiver]) {
+      chatContentList[receiver] = [];
+    }
+    Client.emit('sendtext', JSON.stringify({ msg_create: dayjs().unix(), user: user.user_id, msg: chatText, reciveUser: receiver }));
+    setChatText('');
+  }
+
+  console.log('123', chatContentList);
 
   return (
     <div>
@@ -266,8 +315,8 @@ function My(props) {
                       <div className={styles.orderContent2}>
                         <div className={styles.good_detail}>
                           <img
-                              alt=""
-                              src={item.img}
+                            alt=""
+                            src={item.img}
                           />
                           <div className={styles.detail}>
                             <div>{item.good_name}</div>
@@ -279,7 +328,7 @@ function My(props) {
                         <div className={styles.generateItem}>￥{item.good_out_price?.toFixed(2)}</div>
                         <div className={styles.generateItem}>
                           <Tag color="#eb9a4e">{OrderStatus[Number(item.order_status)]}</Tag>
-                          <a onClick={(e) => { e.preventDefault(); window.location.href = '/app/order/detail?orderId=' + item.good_order_id } }>查看订单</a>
+                          <a onClick={(e) => { e.preventDefault(); window.location.href = '/app/order/detail?orderId=' + item.good_order_id }}>查看订单</a>
                         </div>
                         <div className={styles.generateItem}>
                           <Button onClick={handleOKOrder.bind(this, item.good_order_id)} size="small" style={{ fontSize: '12px', color: '#fff', background: '#FF661A' }}>确认收货</Button>
@@ -295,43 +344,43 @@ function My(props) {
           <div className={styles.orderGoods}>
             <h3>我卖出的</h3>
             <div className={styles.orderGoodList}>
-            {
-              myGoods && myGoods.data && myGoods.data.data.map((item, index) => {
-                return (
+              {
+                myGoods && myGoods.data && myGoods.data.data.map((item, index) => {
+                  return (
                     <div style={{ position: 'relative' }}>
                       <GoodsItem ItemData={item} key={Math.random() * 10000} gotoDetail={() => { window.location.href = '/app/good/' + item.good_id }}></GoodsItem>
-                      <Button 
+                      <Button
                         style={{ position: 'absolute', top: '10px', left: '10px' }}
                         type="primary" size="small" onClick={
-                        async (e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          const res = await request('/nodeapi/deletegood', {
-                            method: 'post',
-                            body: JSON.stringify({
-                              id: item.good_id,
-                            }),
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                          });
-                          if (res && res.data && res.data.success) {
-                            message.success('删除成功');
-                            const List = myGoods.data.data.filter((item2) => {
+                          async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const res = await request('/nodeapi/deletegood', {
+                              method: 'post',
+                              body: JSON.stringify({
+                                id: item.good_id,
+                              }),
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                            });
+                            if (res && res.data && res.data.success) {
+                              message.success('删除成功');
+                              const List = myGoods.data.data.filter((item2) => {
                                 return item.good_id != item2.good_id;
                               });
-                            const oldGoodList =  JSON.parse(JSON.stringify(myGoods));
-                            oldGoodList.data.data = List;
-                            setMyGoods(oldGoodList);
-                          } else {
-                            message.error('删除失败');
+                              const oldGoodList = JSON.parse(JSON.stringify(myGoods));
+                              oldGoodList.data.data = List;
+                              setMyGoods(oldGoodList);
+                            } else {
+                              message.error('删除失败');
+                            }
                           }
-                        }
-                      }>删除商品</Button>
+                        }>删除商品</Button>
                     </div>
                   )
                 })
-            }
+              }
             </div>
           </div>
           <Button
@@ -366,6 +415,72 @@ function My(props) {
             }
             <div className={styles.addAddress} onClick={() => { setAddressVisible(true) }}>
               + 添加新地址
+            </div>
+          </div>
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="联系列表" key="3">
+          <div className={styles.Chat}>
+            <div className={styles.ChatList}>
+              {
+               userList.length > 0 && userList.map((item, index) => {
+                  return item.user == user.user_id ? (
+                    <div onClick={() => {
+                      setSelectRec(index);
+                      setReceiver(item?.reciveUser);
+                    }} className={`${index == selectRec ? styles.active : ''} ${styles.ChatItem}`}>
+                      <div style={{ float: 'left' }}>
+                        <UserOutlined style={{ backgroundColor: '#87d068', marginRight: '10px' }}/>
+                        {/* <Avatar style={{ backgroundColor: '#87d068', marginRight: '10px' }} icon={<UserOutlined />} /> */}
+                        <span>{item?.nick_name}</span>
+                      </div>
+                      <span className={styles.deleteChat}>X</span>
+                    </div>
+                  ) :  (
+                    <div onClick={() => {
+                      setSelectRec(index);
+                      setReceiver(item?.user);
+                    }} className={`${index == selectRec ? styles.active : ''} ${styles.ChatItem}`}>
+                      <div style={{ float: 'left' }}>
+                        <UserOutlined style={{ backgroundColor: '#87d068', marginRight: '10px' }}/>
+                        {/* <Avatar style={{ backgroundColor: '#87d068', marginRight: '10px' }} icon={<UserOutlined />} /> */}
+                        <span>{item.user_nick}</span>
+                      </div>
+                      <span className={styles.deleteChat}>X</span>
+                    </div>
+                  )
+                })
+              }
+              {/* <div className={`${styles.ChatItem}`}>
+                <div style={{ float: 'left' }}>
+                  <Avatar style={{ backgroundColor: '#87d068', marginRight: '10px' }} icon={<UserOutlined />} />
+                  <span>用户1233455</span>
+                </div>
+                <span className={styles.deleteChat}>X</span>
+              </div> */}
+            </div>
+            <div className={styles.ChatContent}>
+              <div style={{ padding: '20px', height: '350px', overflow: 'auto' }}>
+                {
+                  chatContentList && (
+                    chatContentList.map((item) => {
+                      return (
+                        <div style={(item.user == user.user_id) ? { textAlign: '-webkit-right' } : null}>
+                          <div><span style={{ marginRight: '5px' }}>{(item.user == user.user_id) ? '自己' : '对方'}</span><span style={{ fontSize: '8px', color: 'grey' }}>{dayjs.unix(item.msg_create).format('YYYY-MM-DD HH:mm:ss')}</span></div>
+                          <div className={item.user == user.user_id ? styles.popMyItem : styles.popItem}>
+                            {item.msg}
+                          </div>
+                        </div>
+                      )
+                    })
+                  )
+                }
+              </div>
+              <Divider style={{ margin: '0px' }}></Divider>
+              <div style={{ height: '100px', position: 'relative' }}>
+                <Input.TextArea autoFocus style={{ width: '100%', height: '56%' }} resize="none" value={chatText} onChange={(e) => setChatText(e.target.value)} bordered={false}>
+                </Input.TextArea>
+                <Button onClick={handleSendMsg} style={{ position: 'absolute', right: '10px', bottom: '5px' }} type="primary" size="small">发送</Button>
+              </div>
             </div>
           </div>
         </Tabs.TabPane>

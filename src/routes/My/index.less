@@ -136,3 +136,57 @@
     margin-right: 16px;
   }
 }
+
+.Chat {
+  display: flex;
+  border: 1px solid #c7c5c5;
+  .ChatList{
+    flex: 1;
+    background: #c7c5c571;
+    height: 450px;
+    overflow-y: auto;
+    .deleteChat{
+      float: right;
+      display: none;
+    }
+    .ChatItem{
+      padding: 10px 15px;
+      cursor: pointer;
+      &:hover {
+        background: #c7c5c5;
+      }
+      &:hover .deleteChat {
+        display: block;
+      }
+      &::after {
+        content: "";
+        display: block;
+        height: 0;
+        clear:both;
+        visibility: hidden;
+      }
+    }
+    .active {
+      background: #c7c5c5;
+    }
+  }
+  .ChatContent{
+    flex: 3;
+  }
+}
+.popMyItem{
+  margin: 10px 0px;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 30%;
+  background: #b0e8f741;
+  text-align: left;
+}
+.popItem {
+  margin: 10px 0px;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 30%;
+  background: #c7c5c541;
+  text-align: left;
+}

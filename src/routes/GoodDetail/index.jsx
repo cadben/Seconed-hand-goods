@@ -63,8 +63,19 @@ function GoodsCenter(props) {
     }
   }
   
-  const getConnect = () => {
-    console.log('点击了联系对方');
+  const getConnect = async () => {
+    await fetch('/nodeapi/openchat', {
+      method: 'post',
+      body: JSON.stringify({
+        user: props.auth.user.user_id,
+        reciveUser: res.value?.data.good_user,
+        nick_name: res.value?.data.user_nick
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    window.open('/app/my?status=3');
   }
 
   const gotoBuy = () => {
