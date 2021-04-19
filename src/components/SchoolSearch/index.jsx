@@ -29,12 +29,13 @@ export default class SearchInput extends React.Component {
     this.state = {
         data: [],
         value: '',
-        serachValue: '请输入学校',
+        serachValue: this.props.searchSchool,
     }
   }
 
   handleSearch = value => {
-    this.setState({ serachValue: value });
+    // this.setState({ serachValue: value });
+    this.props.setSearchSchool(value);
     if (value) {
         fetch(value, data => this.setState({ data }));
     } else {
@@ -46,12 +47,12 @@ export default class SearchInput extends React.Component {
     // console.log('handlechange', e, options);
     // console.log(this.props);
     this.props.changeSchool(e);
-    this.setState({ value: e, serachValue: options.children });
+    this.setState({ value: e });
+    this.props.setSearchSchool(options.children );
   };
 
   
   render() {
-    console.log(this.state.serachValue);
     const options = this.state.data.map(d => <Option key={d.school_id}>{d.school_name}</Option>);
     return (
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

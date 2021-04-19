@@ -62,7 +62,8 @@ function My(props) {
   const [receiver, setReceiver] = useState(receive);
   const [chatContentList, setChatContentList] = useState([]);
   const [selectRec, setSelectRec] = useState(0);
-  const [userList, setUserList] = useState([]); 
+  const [userList, setUserList] = useState([]);
+  const [searchSchool, setSearchSchool] = useState('');
   const [allChat, setAllChat] = useState(null);
 
   useEffect(() => {
@@ -132,18 +133,39 @@ function My(props) {
       message.warn('请输入邮箱验证码');
     }
     else {
-      const result = await verify({
-        name,
-        userId: user.user_id,
-        email: text + '.edu.cn',
-        inputcode: code,
-        school,
+      const site = 'mail.' + text.match(/@([\w\.]+)/)[1] + '.edu.cn';
+      const vresult = await request('/nodeapi/verifyschool', {
+        method: 'post',
+        body: JSON.stringify({
+          key: site,
+          searchSchool,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-      if (result && result.data.success) {
-        message.success('验证成功');
-        props.history.push('/app/my');
+      let s = false;
+      if (vresult && vresult.data && vresult.data.success) {
+        s = true;
+      }
+
+      if (s) {
+        const result = await verify({
+          name,
+          userId: user.user_id,
+          email: text + '.edu.cn',
+          inputcode: code,
+          school,
+        });
+        if (result && result.data.success) {
+          message.success('验证成功');
+          // props.history.push('/app/my');
+          window.location.href = '/app/my';
+        } else {
+          message.error(result.data.msg);
+        }
       } else {
-        message.error(result.data.msg);
+        message.warn('学校和邮箱不匹配');
       }
     }
   }
@@ -264,8 +286,6 @@ function My(props) {
     Client.emit('sendtext', JSON.stringify({ msg_create: dayjs().unix(), user: user.user_id, msg: chatText, reciveUser: receiver }));
     setChatText('');
   }
-
-  console.log('123', chatContentList);
 
   return (
     <div>
@@ -502,6 +522,8 @@ function My(props) {
             <SchoolSearch
               value={school}
               changeSchool={changeSchool}
+              searchSchool={searchSchool}
+              setSearchSchool={setSearchSchool}
               style={{ marginTop: '15px', marginBottom: '15px' }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
