@@ -5,7 +5,7 @@ import MSearch from '../../components/PSearch';
 import styles from './index.less';
 import { useAsync } from 'react-use';
 import { getGoodDetail, addComment } from '../../services/goods';
-import { Button, Divider, Empty, Input, Spin, Tag, Modal, message } from 'antd';
+import { Button, Divider, Empty, Input, Spin, Tag, Modal, message, Rate } from 'antd';
 import { tags } from '../../utils/util';
 import dayjs from 'dayjs';
 import { Redirect } from 'react-router';
@@ -124,6 +124,7 @@ function GoodsCenter(props) {
                     {/* <UserOutlined style={{ marginRight: '10px' }}/> */}
                     <span style={{ fontSize: '14px' }}>卖家：</span>
                     {res.value.data.user_nick}
+                    <Rate style={{ marginLeft: '20px' }} disabled defaultValue={res.value.data.user_rate}></Rate>
                   </div>
                   <div style={{ marginTop: '15px' }}>
                     成色：
